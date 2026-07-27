@@ -11,4 +11,12 @@ describe('useAuthStore', () => {
   it('mantém o usuário não autenticado enquanto não há API key salva', () => {
     expect(useAuthStore().autenticado).toBe(false)
   })
+
+  it('autentica o usuário após chamar entrar()', () => {
+    const store = useAuthStore()
+
+    store.entrar()
+
+    expect(store.autenticado).toBe(true)
+  })
 })

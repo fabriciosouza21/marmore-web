@@ -4,5 +4,9 @@ import { ref } from 'vue'
 export const useAuthStore = defineStore('auth', () => {
   const autenticado = ref(false)
 
-  return { autenticado }
+  const entrar = () => {
+    autenticado.value = true
+  }
+
+  return { autenticado, entrar }
 })
