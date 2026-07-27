@@ -1,15 +1,18 @@
+import { useStorage } from '@vueuse/core'
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed } from 'vue'
 
 export const useAuthStore = defineStore('auth', () => {
-  const autenticado = ref(false)
+  const apiKey = useStorage('marmore.apiKey', '')
 
-  const entrar = () => {
-    autenticado.value = true
+  const autenticado = computed(() => apiKey.value !== '')
+
+  const entrar = (chave: string) => {
+    apiKey.value = chave
   }
 
   const sair = () => {
-    autenticado.value = false
+    apiKey.value = ''
   }
 
   return { autenticado, entrar, sair }
