@@ -5,6 +5,7 @@ describe('edicaoFaseSchema', () => {
   it.each(['recebido', 'redimensionando', 'gerando'] as const)(
     'aceita "%s" como fase válida',
     (fase) => {
-    expect(edicaoFaseSchema.parse(fase)).toBe(fase)
-  })
+      expect(edicaoFaseSchema.parse(fase)).toBe(fase)
+    },
+  )
 })
