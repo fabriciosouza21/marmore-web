@@ -19,4 +19,13 @@ describe('useAuthStore', () => {
 
     expect(store.autenticado).toBe(true)
   })
+
+  it('desautentica o usuário após chamar sair()', () => {
+    const store = useAuthStore()
+
+    store.entrar()
+    store.sair()
+
+    expect(store.autenticado).toBe(false)
+  })
 })

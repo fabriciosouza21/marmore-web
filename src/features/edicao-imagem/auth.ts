@@ -8,5 +8,9 @@ export const useAuthStore = defineStore('auth', () => {
     autenticado.value = true
   }
 
-  return { autenticado, entrar }
+  const sair = () => {
+    autenticado.value = false
+  }
+
+  return { autenticado, entrar, sair }
 })
