@@ -5,7 +5,10 @@ import type { EdicaoFase } from './tipos'
 
 export type EditImageBuilder = {
   onFase(fn: (fase: EdicaoFase) => void): EditImageBuilder
-  run(): Promise<{ imagemBase64: string }>
+  run(): Promise<{
+    imagemBase64: string
+    metadados: { latencyMs: number; custoBrl: number | null; usage: unknown } | null
+  }>
 }
 
 export function editImage(opts: { apiKey: string; image: Blob }): EditImageBuilder {
@@ -33,6 +36,11 @@ export function editImage(opts: { apiKey: string; image: Blob }): EditImageBuild
     const decoder = new TextDecoder()
     let buffer = ''
     let imagemBase64 = ''
+    let metadados: {
+      latencyMs: number
+      custoBrl: number | null
+      usage: unknown
+    } | null = null
 
     for (;;) {
       const { done, value } = await reader.read()
@@ -45,6 +53,9 @@ export function editImage(opts: { apiKey: string; image: Blob }): EditImageBuild
         if (frame?.tipo === 'fase' && onFaseFn) {
           onFaseFn(frame.valor)
         }
+        if (frame?.tipo === 'concluido') {
+          metadados = frame.metadados
+        }
         if (frame?.tipo === 'erro') {
           throw new EdicaoFalhouError(frame.mensagem, frame.latencyMs)
         }
@@ -55,7 +66,7 @@ export function editImage(opts: { apiKey: string; image: Blob }): EditImageBuild
       buffer = restante
     }
 
-    return { imagemBase64 }
+    return { imagemBase64, metadados }
   }
 
   return {

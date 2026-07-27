@@ -71,4 +71,18 @@ describe('editImage', () => {
       new HttpError(401),
     )
   })
+
+  it('inclui metadados da conclusão no resultado', async () => {
+    mockarFetchSse([
+      'data:{"latency_ms":12345,"custo_brl":0.27,"usage":{"input_tokens":1200}}\n\ndata:img\n\n',
+    ])
+
+    const result = await editImage({ apiKey: 'k', image: new Blob() }).run()
+
+    expect(result.metadados).toEqual({
+      latencyMs: 12345,
+      custoBrl: 0.27,
+      usage: { input_tokens: 1200 },
+    })
+  })
 })
