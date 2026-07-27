@@ -6,16 +6,23 @@ export type FrameConcluido = {
   tipo: 'concluido'
   metadados: { latencyMs: number; custoBrl: number | null; usage: unknown }
 }
+export type FrameImagem = { tipo: 'imagem'; base64: string }
 
-export type ResultadoFrame = FrameFase | FrameErro | FrameConcluido
+export type ResultadoFrame = FrameFase | FrameErro | FrameConcluido | FrameImagem
 
 export function despacharFrame(payload: string): ResultadoFrame | null {
-  const json = JSON.parse(payload) as {
+  let json: {
     fase?: string
     error?: string
     latency_ms?: number
     custo_brl?: number | null
     usage?: unknown
+  }
+
+  try {
+    json = JSON.parse(payload)
+  } catch {
+    return { tipo: 'imagem', base64: payload }
   }
 
   if (json.fase !== undefined) {
