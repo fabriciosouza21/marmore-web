@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import { editImage } from '../editImage'
+import { EdicaoFalhouError, HttpError } from '../erros'
 
 function criarStreamSse(chunks: string[]): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder()
@@ -50,5 +51,24 @@ describe('editImage', () => {
       .run()
 
     expect(fases).toEqual(['recebido', 'redimensionando', 'gerando'])
+  })
+
+  it('rejeita com EdicaoFalhouError quando o stream envia erro de domínio', async () => {
+    mockarFetchSse(['data:{"error":"imagem indecodificavel","latency_ms":120}\n\n'])
+
+    await expect(editImage({ apiKey: 'k', image: new Blob() }).run()).rejects.toThrow(
+      new EdicaoFalhouError('imagem indecodificavel', 120),
+    )
+  })
+
+  it('rejeita com HttpError quando o backend responde 401', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(new Response('{"error":"key invalida"}', { status: 401 })),
+    )
+
+    await expect(editImage({ apiKey: 'k', image: new Blob() }).run()).rejects.toThrow(
+      new HttpError(401),
+    )
   })
 })

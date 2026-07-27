@@ -1,4 +1,5 @@
 import { despacharFrame } from './despacharFrame'
+import { EdicaoFalhouError, HttpError } from './erros'
 import { parseSseFrames } from './parseSseFrames'
 import type { EdicaoFase } from './tipos'
 
@@ -20,6 +21,10 @@ export function editImage(opts: { apiKey: string; image: Blob }): EditImageBuild
       body: opts.image,
     })
 
+    if (!response.ok) {
+      throw new HttpError(response.status)
+    }
+
     const reader = response.body?.getReader()
     if (!reader) {
       throw new Error('stream indisponível')
@@ -39,6 +44,9 @@ export function editImage(opts: { apiKey: string; image: Blob }): EditImageBuild
         const frame = despacharFrame(payload)
         if (frame?.tipo === 'fase' && onFaseFn) {
           onFaseFn(frame.valor)
+        }
+        if (frame?.tipo === 'erro') {
+          throw new EdicaoFalhouError(frame.mensagem, frame.latencyMs)
         }
         if (frame?.tipo === 'imagem') {
           imagemBase64 = frame.base64
