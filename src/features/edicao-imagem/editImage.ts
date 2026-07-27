@@ -30,13 +30,14 @@ export function editImage(opts: { apiKey: string; image: Blob }): EditImageBuild
       if (done) break
 
       buffer += decoder.decode(value, { stream: true })
-      for (const payload of parseSseFrames(buffer)) {
+      const { frames, restante } = parseSseFrames(buffer)
+      for (const payload of frames) {
         const frame = despacharFrame(payload)
         if (frame?.tipo === 'imagem') {
           imagemBase64 = frame.base64
         }
       }
-      buffer = ''
+      buffer = restante
     }
 
     return { imagemBase64 }
