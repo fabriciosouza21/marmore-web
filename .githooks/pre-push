@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# pre-push: roda a suite de testes unitarios antes de compartilhar.
+set -euo pipefail
+
+echo "[pre-push] rodando vitest..."
+npm run test:unit -- --run
+
+echo "[pre-push] ok"

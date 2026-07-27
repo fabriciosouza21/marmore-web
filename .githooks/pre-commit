@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# pre-commit: formata com oxfmt e valida com oxlint antes de commitar.
+set -euo pipefail
+
+echo "[pre-commit] formatando com oxfmt..."
+npm run format
+
+echo "[pre-commit] validando com oxlint..."
+npm run lint
+
+echo "[pre-commit] ok"

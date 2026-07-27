@@ -30,11 +30,7 @@ const onSubmit = handleSubmit((values: LoginForm) => {
 
       <el-form label-position="top" @submit.prevent="onSubmit">
         <el-form-item label="Email" :error="errors.email">
-          <el-input
-            v-model="email"
-            v-bind="emailProps"
-            placeholder="voce@exemplo.com"
-          >
+          <el-input v-model="email" v-bind="emailProps" placeholder="voce@exemplo.com">
             <template #prefix>
               <el-icon><Message /></el-icon>
             </template>
@@ -55,9 +51,7 @@ const onSubmit = handleSubmit((values: LoginForm) => {
           </el-input>
         </el-form-item>
 
-        <el-button type="primary" native-type="submit" @click="onSubmit">
-          Entrar
-        </el-button>
+        <el-button type="primary" native-type="submit" @click="onSubmit"> Entrar </el-button>
       </el-form>
     </el-card>
   </div>

@@ -12,7 +12,8 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "format": "oxfmt src/",
-    "lint": "oxlint ."
+    "lint": "oxlint .",
+    "prepare": "git config core.hooksPath .githooks"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
