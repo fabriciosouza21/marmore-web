@@ -1,6 +1,6 @@
-import { edicaoFaseSchema } from './tipos'
+import { edicaoFaseSchema, type EdicaoFase } from './tipos'
 
-export type FrameFase = { tipo: 'fase'; valor: string }
+export type FrameFase = { tipo: 'fase'; valor: EdicaoFase }
 export type FrameErro = { tipo: 'erro'; mensagem: string; latencyMs: number }
 export type FrameConcluido = {
   tipo: 'concluido'
