@@ -38,4 +38,17 @@ describe('editImage', () => {
 
     expect(result.imagemBase64).toBe('ZmFrZS1pbWFnZW0x')
   })
+
+  it('chama o callback onFase para cada fase recebida', async () => {
+    mockarFetchSse([
+      'data:{"fase":"recebido"}\n\ndata:{"fase":"redimensionando"}\n\ndata:{"fase":"gerando"}\n\ndata:{"latency_ms":1}\n\ndata:img\n\n',
+    ])
+
+    const fases: string[] = []
+    await editImage({ apiKey: 'k', image: new Blob() })
+      .onFase((f) => fases.push(f))
+      .run()
+
+    expect(fases).toEqual(['recebido', 'redimensionando', 'gerando'])
+  })
 })

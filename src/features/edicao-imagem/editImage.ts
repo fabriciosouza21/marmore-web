@@ -1,11 +1,15 @@
 import { despacharFrame } from './despacharFrame'
 import { parseSseFrames } from './parseSseFrames'
+import type { EdicaoFase } from './tipos'
 
 export type EditImageBuilder = {
+  onFase(fn: (fase: EdicaoFase) => void): EditImageBuilder
   run(): Promise<{ imagemBase64: string }>
 }
 
 export function editImage(opts: { apiKey: string; image: Blob }): EditImageBuilder {
+  let onFaseFn: ((fase: EdicaoFase) => void) | null = null
+
   const run = async () => {
     const response = await fetch('/images/edit', {
       method: 'POST',
@@ -33,6 +37,9 @@ export function editImage(opts: { apiKey: string; image: Blob }): EditImageBuild
       const { frames, restante } = parseSseFrames(buffer)
       for (const payload of frames) {
         const frame = despacharFrame(payload)
+        if (frame?.tipo === 'fase' && onFaseFn) {
+          onFaseFn(frame.valor)
+        }
         if (frame?.tipo === 'imagem') {
           imagemBase64 = frame.base64
         }
@@ -43,5 +50,11 @@ export function editImage(opts: { apiKey: string; image: Blob }): EditImageBuild
     return { imagemBase64 }
   }
 
-  return { run }
+  return {
+    onFase(fn: (fase: EdicaoFase) => void) {
+      onFaseFn = fn
+      return this
+    },
+    run,
+  }
 }
