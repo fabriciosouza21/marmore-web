@@ -85,4 +85,17 @@ describe('editImage', () => {
       usage: { input_tokens: 1200 },
     })
   })
+
+  it('tolera pings entre frames de fase sem interromper o stream', async () => {
+    mockarFetchSse([
+      'data:{"fase":"recebido"}\n\nevent:ping\ndata:foo\n\ndata:{"fase":"gerando"}\n\ndata:{"latency_ms":1}\n\ndata:img\n\n',
+    ])
+
+    const fases: string[] = []
+    await editImage({ apiKey: 'k', image: new Blob() })
+      .onFase((f) => fases.push(f))
+      .run()
+
+    expect(fases).toEqual(['recebido', 'gerando'])
+  })
 })
