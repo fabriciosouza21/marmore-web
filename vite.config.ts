@@ -23,13 +23,21 @@ export default defineConfig({
       dts: 'src/auto-imports.d.ts',
     }),
 	Components({
-	  resolvers: [ElementPlusResolver()],
+      resolvers: [ElementPlusResolver()],
       dts: 'src/components.d.ts',
     }),
   ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
+  server: {
+    proxy: {
+      '/images': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
     },
   },
 })
