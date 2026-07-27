@@ -13,4 +13,11 @@ describe('despacharFrame', () => {
       latencyMs: 120,
     })
   })
+
+  it('reconhece um payload de conclusão', () => {
+    expect(despacharFrame('{"latency_ms":12345,"custo_brl":0.27,"usage":{"input_tokens":1200}}')).toEqual({
+      tipo: 'concluido',
+      metadados: { latencyMs: 12345, custoBrl: 0.27, usage: { input_tokens: 1200 } },
+    })
+  })
 })
