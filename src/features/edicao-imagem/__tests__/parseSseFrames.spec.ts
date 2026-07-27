@@ -7,9 +7,14 @@ describe('parseSseFrames', () => {
   })
 
   it('extrai os payloads de múltiplos frames completos', () => {
-    expect(parseSseFrames('data:{"fase":"recebido"}\n\ndata:{"fase":"redimensionando"}\n\n')).toEqual([
-      '{"fase":"recebido"}',
-      '{"fase":"redimensionando"}',
-    ])
+    expect(
+      parseSseFrames('data:{"fase":"recebido"}\n\ndata:{"fase":"redimensionando"}\n\n'),
+    ).toEqual(['{"fase":"recebido"}', '{"fase":"redimensionando"}'])
+  })
+
+  it('ignora frames nomeados como ping', () => {
+    const input = 'event:ping\ndata:foo\n\ndata:bar\n\n'
+
+    expect(parseSseFrames(input)).toEqual(['bar'])
   })
 })
