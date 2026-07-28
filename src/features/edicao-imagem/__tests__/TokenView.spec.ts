@@ -1,8 +1,15 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
+import { createPinia, setActivePinia } from 'pinia'
+import { useAuthStore } from '../auth'
 import TokenView from '../TokenView.vue'
 
 describe('TokenView', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+    localStorage.clear()
+  })
+
   it('mostra erro de validacao quando a chave esta vazia', async () => {
     const wrapper = mount(TokenView)
 
@@ -13,5 +20,14 @@ describe('TokenView', () => {
     await flushPromises()
 
     expect(wrapper.text()).toContain('API key é obrigatória')
+  })
+
+  it('autentica quando a chave e valida', async () => {
+    const wrapper = mount(TokenView)
+
+    await wrapper.find('input').setValue('chave-valida')
+    await wrapper.vm.onSubmit()
+
+    expect(useAuthStore().autenticado).toBe(true)
   })
 })
