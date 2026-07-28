@@ -54,7 +54,7 @@
 | # | Entregavel | Depende de | Status |
 |---|-----------|-----------|--------|
 | 1 | Fundação: proxy Vite, store de auth, cliente SSE, modelo de resultado | — | [x] |
-| 2 | Tela 1: entrada da API key (TokenView) | 1 | [ ] |
+| 2 | Tela 1: entrada da API key (TokenView) | 1 | [x] |
 | 3 | Tela 2: captura/upload da foto do ambiente | 1 | [ ] |
 | 4 | Resultado, custo e tratamento de erros | 3 | [ ] |
 | 5 | Polimento UX e testes | 4 | [ ] |
