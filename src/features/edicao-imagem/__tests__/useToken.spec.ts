@@ -13,4 +13,13 @@ describe('useToken', () => {
 
     expect(useAuthStore().autenticado).toBe(true)
   })
+
+  it('desautentica o usuário ao chamar sair', () => {
+    useAuthStore().entrar('chave-valida')
+
+    const { sair } = useToken()
+    sair()
+
+    expect(useAuthStore().autenticado).toBe(false)
+  })
 })

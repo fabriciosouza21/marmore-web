@@ -5,5 +5,8 @@ export function useToken() {
     useAuthStore().entrar(chave)
   }
 
-  return { onSubmit }
+  return {
+    onSubmit,
+    sair: () => useAuthStore().sair(),
+  }
 }
