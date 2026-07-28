@@ -15,6 +15,8 @@ const onSubmit = handleSubmit((values) => {
   useToken().onSubmit(values.apiKey)
   router.push('/captura')
 })
+
+defineExpose({ onSubmit })
 </script>
 
 <template>
