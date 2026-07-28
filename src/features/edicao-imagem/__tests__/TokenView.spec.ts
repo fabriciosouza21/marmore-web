@@ -1,7 +1,13 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { useAuthStore } from '../auth'
+
+const pushMock = vi.hoisted(() => vi.fn())
+vi.mock('vue-router', () => ({
+  useRouter: () => ({ push: pushMock }),
+}))
+
 import TokenView from '../TokenView.vue'
 
 describe('TokenView', () => {
@@ -29,5 +35,14 @@ describe('TokenView', () => {
     await wrapper.vm.onSubmit()
 
     expect(useAuthStore().autenticado).toBe(true)
+  })
+
+  it('navega para /captura apos autenticar', async () => {
+    const wrapper = mount(TokenView)
+
+    await wrapper.find('input').setValue('chave-valida')
+    await wrapper.vm.onSubmit()
+
+    expect(pushMock).toHaveBeenCalledWith('/captura')
   })
 })
