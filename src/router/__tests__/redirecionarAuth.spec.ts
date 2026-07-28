@@ -10,6 +10,10 @@ describe('redirecionarAuth', () => {
     expect(redirecionarAuth(true, '/token')).toBe('/captura')
   })
 
+  it('nao redireciona quando nao autenticado acessa /token', () => {
+    expect(redirecionarAuth(false, '/token')).toBeUndefined()
+  })
+
   it('nao redireciona quando autenticado acessa outra rota', () => {
     expect(redirecionarAuth(true, '/captura')).toBeUndefined()
   })
