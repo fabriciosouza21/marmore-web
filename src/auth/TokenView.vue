@@ -21,7 +21,8 @@ defineExpose({ onSubmit })
 
 <template>
   <el-form @submit.prevent="onSubmit">
-    <el-input v-model="apiKey" v-bind="apiKeyProps" />
-    <span v-if="errors.apiKey">{{ errors.apiKey }}</span>
+    <el-form-item :error="errors.apiKey">
+      <el-input v-model="apiKey" v-bind="apiKeyProps" />
+    </el-form-item>
   </el-form>
 </template>

@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { useAuthStore } from '../authStore'
-import { ElForm, ElInput } from 'element-plus'
+import { ElForm, ElFormItem, ElInput } from 'element-plus'
 
 const pushMock = vi.hoisted(() => vi.fn())
 vi.mock('vue-router', () => ({
@@ -26,11 +26,15 @@ describe('TokenView', () => {
 
     await wrapper.find('form').trigger('submit')
     // vee-validate encadeia microtasks ao validar: dois flushes para o erro
-    // propagar ao DOM (comprovado: falha com apenas um).
+    // propagar ao estado reativo (comprovado: falha com apenas um).
     await flushPromises()
     await flushPromises()
 
-    expect(wrapper.text()).toContain('API key é obrigatória')
+    // Assertionamos o prop :error do el-form-item (e nao wrapper.text()) para
+    // provar o BINDING: errors.apiKey -> el-form-item. O texto em si nao renderiza
+    // no DOM em jsdom (el-form-item o mostra via <Transition> stubada), entao ler
+    // o prop e a forma de garantir a cobertura do binding sem depender de render.
+    expect(wrapper.findComponent(ElFormItem).props('error')).toBe('API key é obrigatória')
   })
 
   it('autentica quando a chave e valida', async () => {
