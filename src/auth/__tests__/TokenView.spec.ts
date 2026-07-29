@@ -2,6 +2,8 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { useAuthStore } from '../authStore'
+import ElementPlus from 'element-plus'
+import { ElForm } from 'element-plus'
 
 const pushMock = vi.hoisted(() => vi.fn())
 vi.mock('vue-router', () => ({
@@ -44,5 +46,13 @@ describe('TokenView', () => {
     await wrapper.vm.onSubmit()
 
     expect(pushMock).toHaveBeenCalledWith('/captura')
+  })
+
+  it('renderiza um el-form como wrapper do formulario', () => {
+    const wrapper = mount(TokenView, {
+      global: { plugins: [ElementPlus] },
+    })
+
+    expect(wrapper.findComponent(ElForm).exists()).toBe(true)
   })
 })

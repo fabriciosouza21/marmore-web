@@ -20,8 +20,8 @@ defineExpose({ onSubmit })
 </script>
 
 <template>
-  <form @submit.prevent="onSubmit">
+  <el-form @submit.prevent="onSubmit">
     <input v-model="apiKey" v-bind="apiKeyProps" />
     <span v-if="errors.apiKey">{{ errors.apiKey }}</span>
-  </form>
+  </el-form>
 </template>
