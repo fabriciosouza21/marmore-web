@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { edicaoFaseSchema } from '../tipos'
+import { edicaoFaseSchema } from '../../dominio/tipos'
 
 describe('edicaoFaseSchema', () => {
   it.each(['recebido', 'redimensionando', 'gerando'] as const)(

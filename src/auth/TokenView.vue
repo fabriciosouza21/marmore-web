@@ -3,12 +3,12 @@ import { z } from 'zod'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useRouter } from 'vue-router'
-import { apiKeySchema } from './apiKeySchema'
+import { tokenSchema } from './tokenSchema'
 import { useToken } from './useToken'
 
 const router = useRouter()
 const { handleSubmit, errors, defineField } = useForm<{ apiKey: string }>({
-  validationSchema: toTypedSchema(z.object({ apiKey: apiKeySchema })),
+  validationSchema: toTypedSchema(z.object({ apiKey: tokenSchema })),
 })
 const [apiKey, apiKeyProps] = defineField('apiKey')
 const onSubmit = handleSubmit((values) => {

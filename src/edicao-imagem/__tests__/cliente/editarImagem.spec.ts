@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { editImage } from '../editImage'
-import { EdicaoFalhouError, HttpError } from '../erros'
+import { editarImagem } from '../../cliente/editarImagem'
+import { EdicaoFalhouError, HttpError } from '../../dominio/erros'
 
 function criarStreamSse(chunks: string[]): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder()
@@ -21,13 +21,13 @@ function mockarFetchSse(chunks: string[]): void {
   )
 }
 
-describe('editImage', () => {
+describe('editarImagem', () => {
   afterEach(() => vi.unstubAllGlobals())
 
   it('resolve com imagemBase64 quando o stream envia conclusão seguida de imagem', async () => {
     mockarFetchSse(['data:{"latency_ms":12345}\n\ndata:ZmFrZS1pbWFnZW0x\n\n'])
 
-    const result = await editImage({ apiKey: 'k', image: new Blob() }).run()
+    const result = await editarImagem({ apiKey: 'k', image: new Blob() }).run()
 
     expect(result.imagemBase64).toBe('ZmFrZS1pbWFnZW0x')
   })
@@ -35,7 +35,7 @@ describe('editImage', () => {
   it('reconstrói a imagem quando o frame é dividido entre chunks', async () => {
     mockarFetchSse(['data:{"latency_ms":12345}\n\ndata:ZmFrZS', '1pbWFnZW0x\n\n'])
 
-    const result = await editImage({ apiKey: 'k', image: new Blob() }).run()
+    const result = await editarImagem({ apiKey: 'k', image: new Blob() }).run()
 
     expect(result.imagemBase64).toBe('ZmFrZS1pbWFnZW0x')
   })
@@ -46,7 +46,7 @@ describe('editImage', () => {
     ])
 
     const fases: string[] = []
-    await editImage({ apiKey: 'k', image: new Blob() })
+    await editarImagem({ apiKey: 'k', image: new Blob() })
       .onFase((f) => fases.push(f))
       .run()
 
@@ -56,7 +56,7 @@ describe('editImage', () => {
   it('rejeita com EdicaoFalhouError quando o stream envia erro de domínio', async () => {
     mockarFetchSse(['data:{"error":"imagem indecodificavel","latency_ms":120}\n\n'])
 
-    await expect(editImage({ apiKey: 'k', image: new Blob() }).run()).rejects.toThrow(
+    await expect(editarImagem({ apiKey: 'k', image: new Blob() }).run()).rejects.toThrow(
       new EdicaoFalhouError('imagem indecodificavel', 120),
     )
   })
@@ -67,7 +67,7 @@ describe('editImage', () => {
       vi.fn().mockResolvedValue(new Response('{"error":"key invalida"}', { status: 401 })),
     )
 
-    await expect(editImage({ apiKey: 'k', image: new Blob() }).run()).rejects.toThrow(
+    await expect(editarImagem({ apiKey: 'k', image: new Blob() }).run()).rejects.toThrow(
       new HttpError(401),
     )
   })
@@ -77,7 +77,7 @@ describe('editImage', () => {
       'data:{"latency_ms":12345,"custo_brl":0.27,"usage":{"input_tokens":1200}}\n\ndata:img\n\n',
     ])
 
-    const result = await editImage({ apiKey: 'k', image: new Blob() }).run()
+    const result = await editarImagem({ apiKey: 'k', image: new Blob() }).run()
 
     expect(result.metadados).toEqual({
       latencyMs: 12345,
@@ -92,7 +92,7 @@ describe('editImage', () => {
     ])
 
     const fases: string[] = []
-    await editImage({ apiKey: 'k', image: new Blob() })
+    await editarImagem({ apiKey: 'k', image: new Blob() })
       .onFase((f) => fases.push(f))
       .run()
 

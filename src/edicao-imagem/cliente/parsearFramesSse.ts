@@ -1,4 +1,4 @@
-export function parseSseFrames(input: string): { frames: string[]; restante: string } {
+export function parsearFramesSse(input: string): { frames: string[]; restante: string } {
   const partes = input.split('\n\n')
   const restante = partes.pop() ?? ''
 

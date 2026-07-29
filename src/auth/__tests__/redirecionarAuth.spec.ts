@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { redirecionarAuth } from '../index'
+import { redirecionarAuth } from '../redirecionarAuth'
 
 describe('redirecionarAuth', () => {
   it('redireciona para /token quando nao autenticado fora de /token', () => {

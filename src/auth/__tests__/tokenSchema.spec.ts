@@ -1,13 +1,13 @@
 import { describe, it, expect } from 'vitest'
-import { apiKeySchema } from '../apiKeySchema'
+import { tokenSchema } from '../tokenSchema'
 
-describe('apiKeySchema', () => {
+describe('tokenSchema', () => {
   it('rejeita string vazia', () => {
-    expect(apiKeySchema.safeParse('').success).toBe(false)
+    expect(tokenSchema.safeParse('').success).toBe(false)
   })
 
   it('rejeita undefined com mensagem pt-BR de obrigatório', () => {
-    const result = apiKeySchema.safeParse(undefined)
+    const result = tokenSchema.safeParse(undefined)
 
     expect(result.error?.issues[0]?.message).toBe('API key é obrigatória')
   })

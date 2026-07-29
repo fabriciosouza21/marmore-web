@@ -1,4 +1,4 @@
-import { useAuthStore } from './auth'
+import { useAuthStore } from './authStore'
 
 export function useToken() {
   const onSubmit = (chave: string) => {

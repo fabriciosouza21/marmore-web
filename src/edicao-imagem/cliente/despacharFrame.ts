@@ -1,4 +1,4 @@
-import { edicaoFaseSchema, type EdicaoFase } from './tipos'
+import { edicaoFaseSchema, type EdicaoFase } from '../dominio/tipos'
 
 export type FrameFase = { tipo: 'fase'; valor: EdicaoFase }
 export type FrameErro = { tipo: 'erro'; mensagem: string; latencyMs: number }

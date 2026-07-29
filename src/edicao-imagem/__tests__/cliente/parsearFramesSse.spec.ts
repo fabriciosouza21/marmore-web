@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest'
-import { parseSseFrames } from '../parseSseFrames'
+import { parsearFramesSse } from '../../cliente/parsearFramesSse'
 
-describe('parseSseFrames', () => {
+describe('parsearFramesSse', () => {
   it('extrai o payload de um frame completo', () => {
-    expect(parseSseFrames('data:{"fase":"recebido"}\n\n')).toEqual({
+    expect(parsearFramesSse('data:{"fase":"recebido"}\n\n')).toEqual({
       frames: ['{"fase":"recebido"}'],
       restante: '',
     })
@@ -11,7 +11,7 @@ describe('parseSseFrames', () => {
 
   it('extrai os payloads de múltiplos frames completos', () => {
     expect(
-      parseSseFrames('data:{"fase":"recebido"}\n\ndata:{"fase":"redimensionando"}\n\n'),
+      parsearFramesSse('data:{"fase":"recebido"}\n\ndata:{"fase":"redimensionando"}\n\n'),
     ).toEqual({
       frames: ['{"fase":"recebido"}', '{"fase":"redimensionando"}'],
       restante: '',
@@ -21,10 +21,10 @@ describe('parseSseFrames', () => {
   it('ignora frames nomeados como ping', () => {
     const input = 'event:ping\ndata:foo\n\ndata:bar\n\n'
 
-    expect(parseSseFrames(input)).toEqual({ frames: ['bar'], restante: '' })
+    expect(parsearFramesSse(input)).toEqual({ frames: ['bar'], restante: '' })
   })
 
   it('preserva o restante parcial quando o input não termina com separador', () => {
-    expect(parseSseFrames('data:ZmFrZS')).toEqual({ frames: [], restante: 'data:ZmFrZS' })
+    expect(parsearFramesSse('data:ZmFrZS')).toEqual({ frames: [], restante: 'data:ZmFrZS' })
   })
 })

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
-import { useAuthStore } from '../auth'
+import { useAuthStore } from '../authStore'
 
 const pushMock = vi.hoisted(() => vi.fn())
 vi.mock('vue-router', () => ({
