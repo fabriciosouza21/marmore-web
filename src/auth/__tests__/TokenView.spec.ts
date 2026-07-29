@@ -3,7 +3,7 @@ import { mount, flushPromises } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { useAuthStore } from '../authStore'
 import ElementPlus from 'element-plus'
-import { ElForm } from 'element-plus'
+import { ElForm, ElInput } from 'element-plus'
 
 const pushMock = vi.hoisted(() => vi.fn())
 vi.mock('vue-router', () => ({
@@ -54,5 +54,13 @@ describe('TokenView', () => {
     })
 
     expect(wrapper.findComponent(ElForm).exists()).toBe(true)
+  })
+
+  it('renderiza um el-input como campo da api key', () => {
+    const wrapper = mount(TokenView, {
+      global: { plugins: [ElementPlus] },
+    })
+
+    expect(wrapper.findComponent(ElInput).exists()).toBe(true)
   })
 })
