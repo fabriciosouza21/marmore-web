@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { useAuthStore } from '../authStore'
-import ElementPlus from 'element-plus'
 import { ElForm, ElInput } from 'element-plus'
 
 const pushMock = vi.hoisted(() => vi.fn())
@@ -12,6 +11,10 @@ vi.mock('vue-router', () => ({
 
 import TokenView from '../TokenView.vue'
 
+// Todos os testes usam bare mount: o ElementPlusResolver (unplugin-vue-components
+// no vite.config) importa estaticamente el-* no SFC em tempo de compilacao,
+// entao os componentes resolvem sem o plugin global. Evita poluicao de contexto
+// (provide/inject) que instalar o plugin num teste causa nos bare mounts seguintes.
 describe('TokenView', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
@@ -49,17 +52,13 @@ describe('TokenView', () => {
   })
 
   it('renderiza um el-form como wrapper do formulario', () => {
-    const wrapper = mount(TokenView, {
-      global: { plugins: [ElementPlus] },
-    })
+    const wrapper = mount(TokenView)
 
     expect(wrapper.findComponent(ElForm).exists()).toBe(true)
   })
 
   it('renderiza um el-input como campo da api key', () => {
-    const wrapper = mount(TokenView, {
-      global: { plugins: [ElementPlus] },
-    })
+    const wrapper = mount(TokenView)
 
     expect(wrapper.findComponent(ElInput).exists()).toBe(true)
   })
