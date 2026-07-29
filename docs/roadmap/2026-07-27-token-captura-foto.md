@@ -19,13 +19,13 @@
 `feat: substituir login por tela de api key`
 - Substitui a `LoginView` (email/senha) por `TokenView`: campo único com `el-form` + vee-validate + zod.
 - Guarda de rota: sem key salva, redireciona para o token; com key, liberada a captura.
-- Trata o 401 (key rejeitada) com mensagem e retomada na própria tela.
 
 ### FE-3 — Tela 2: captura/upload da foto do ambiente
 `feat: adicionar tela de captura/upload da foto`
 - Duas opções na mesma tela: `<input type="file" accept="image/*" capture="environment">` (tira foto no mobile, envia no desktop) e botão de envio normal.
 - Validação de tipo (JPG/PNG) e tamanho antes do envio; dispara o cliente SSE.
 - Feedback das fases `recebido -> redimensionando -> gerando` para o usuário.
+- Trata o 401 (key rejeitada pelo backend) com mensagem e retorno à tela de token. O `TokenView` não faz chamada de rede, então o 401 só surge aqui, na primeira chamada do `editarImagem`.
 
 ### FE-4 — Resultado, custo e tratamento de erros
 `feat: exibir resultado custo e erros da edicao`
