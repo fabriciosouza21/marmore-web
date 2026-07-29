@@ -6,10 +6,10 @@ import { useAuthStore } from '../authStore'
 describe('useToken', () => {
   beforeEach(() => setActivePinia(createPinia()))
 
-  it('autentica o usuário após onSubmit', async () => {
+  it('autentica o usuário após onSubmit', () => {
     const token = useToken()
 
-    await token.onSubmit('x')
+    token.onSubmit('x')
 
     expect(useAuthStore().autenticado).toBe(true)
   })
