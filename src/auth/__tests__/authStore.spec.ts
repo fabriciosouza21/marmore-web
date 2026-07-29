@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
+import { nextTick } from 'vue'
 import { createPinia, setActivePinia } from 'pinia'
 import { useAuthStore } from '../authStore'
 
@@ -27,6 +28,19 @@ describe('useAuthStore', () => {
     store.sair()
 
     expect(store.autenticado).toBe(false)
+  })
+
+  it('remove a api key do localStorage ao chamar sair()', async () => {
+    const store = useAuthStore()
+
+    store.entrar('minha-key')
+    store.sair()
+    // useStorage escreve via watch (flush pre); espera o flush antes de checar.
+    await nextTick()
+
+    // sair deve remover a entrada, nao deixa-la vazia: useStorage atribui null,
+    // o que dispara removeItem, evitando resquicio de storage descobrivel.
+    expect(localStorage.getItem('marmore.apiKey')).toBeNull()
   })
 
   it('restaura o estado autenticado a partir do localStorage na inicialização', () => {
