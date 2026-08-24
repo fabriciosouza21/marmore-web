@@ -58,6 +58,12 @@ function mockarFetchSse(chunks: string[]): void {
   )
 }
 
+// Localiza uma acao clicavel (botao, link ou [role=button]) pelo texto,
+// independente de estar dentro do el-alert ou do card de resultado.
+function acharAcao(wrapper: VueWrapper, texto: string) {
+  return wrapper.findAll('button, a, [role="button"]').find((el) => el.text().includes(texto))
+}
+
 describe('CapturaView', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
@@ -101,5 +107,74 @@ describe('CapturaView', () => {
     await flushPromises()
 
     expect(wrapper.findComponent(ElSteps).props('active')).toBe(2)
+  })
+
+  it('exibe card de resultado com imagem, download e custo quando presentes', async () => {
+    mockarFetchSse([
+      'data:{"fase":"recebido"}\n\ndata:{"latency_ms":12345,"custo_brl":0.27}\n\ndata:aW1hZ2VtLWVkaXRhZGE=\n\n',
+    ])
+    const wrapper = mount(CapturaView)
+
+    await selecionarArquivo(wrapper, new File(['conteudo'], 'foto.png', { type: 'image/png' }))
+    await flushPromises()
+
+    const dataUrl = 'data:image/png;base64,aW1hZ2VtLWVkaXRhZGE='
+    const img = wrapper.find('img')
+    expect(img.exists()).toBe(true)
+    expect(img.attributes('src')).toBe(dataUrl)
+
+    const link = wrapper.find('a[download="ambiente-editado.png"]')
+    expect(link.exists()).toBe(true)
+    expect(link.attributes('href')).toBe(dataUrl)
+
+    // toLocaleString pt-BR usa espaco inseparavel (U+00A0) antes do valor.
+    const texto = wrapper.text().replace(/\u00A0/g, ' ')
+    expect(texto).toContain('R$ 0,27')
+    expect(texto).toContain('12,3 s')
+  })
+
+  it('oculta custo quando o resultado vem sem custo_brl', async () => {
+    mockarFetchSse(['data:{"latency_ms":1000}\n\ndata:aW1hZ2VtLXNlbS1jdXN0bw==\n\n'])
+    const wrapper = mount(CapturaView)
+
+    await selecionarArquivo(wrapper, new File(['conteudo'], 'foto.png', { type: 'image/png' }))
+    await flushPromises()
+
+    // '1,0 s' garante que o card renderizou (evita falso positivo do not.toContain).
+    const texto = wrapper.text().replace(/\u00A0/g, ' ')
+    expect(texto).toContain('1,0 s')
+    expect(texto).not.toContain('R$')
+  })
+
+  it('oferece editar outra foto reiniciando o fluxo apos o resultado', async () => {
+    mockarFetchSse(['data:{"latency_ms":500}\n\ndata:aW1hZ2VtLXJlaW5pY2lhcg==\n\n'])
+    const wrapper = mount(CapturaView)
+
+    await selecionarArquivo(wrapper, new File(['conteudo'], 'foto.png', { type: 'image/png' }))
+    await flushPromises()
+    expect(wrapper.find('img').exists()).toBe(true)
+
+    const acao = acharAcao(wrapper, 'Editar outra foto')
+    expect(acao).toBeDefined()
+    await acao!.trigger('click')
+
+    expect(wrapper.find('input[type="file"]').exists()).toBe(true)
+    expect(wrapper.find('img').exists()).toBe(false)
+  })
+
+  it('permite tentar novamente apos erro retomando o fluxo', async () => {
+    mockarFetchSse(['data:{"error":"falhou","latency_ms":10}\n\n'])
+    const wrapper = mount(CapturaView)
+
+    await selecionarArquivo(wrapper, new File(['conteudo'], 'foto.png', { type: 'image/png' }))
+    await flushPromises()
+    expect(wrapper.text()).toContain('falhou')
+
+    const acao = acharAcao(wrapper, 'Tentar novamente')
+    expect(acao).toBeDefined()
+    await acao!.trigger('click')
+
+    expect(wrapper.find('input[type="file"]').exists()).toBe(true)
+    expect(wrapper.text()).not.toContain('falhou')
   })
 })
