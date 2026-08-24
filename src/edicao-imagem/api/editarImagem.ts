@@ -9,7 +9,7 @@ type MetadadosEdicao = {
   usage: unknown
 }
 
-type ResultadoEdicao = {
+export type ResultadoEdicao = {
   imagemBase64: string
   metadados: MetadadosEdicao | null
 }

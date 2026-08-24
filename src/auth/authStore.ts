@@ -15,5 +15,5 @@ export const useAuthStore = defineStore('auth', () => {
     apiKey.value = null
   }
 
-  return { autenticado, entrar, sair }
+  return { apiKey, autenticado, entrar, sair }
 })
