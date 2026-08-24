@@ -31,7 +31,7 @@ defineExpose({ onSubmit })
         <el-form-item label="API key" :error="errors.apiKey">
           <el-input v-model="apiKey" v-bind="apiKeyProps" placeholder="Cole a API key aqui" />
         </el-form-item>
-        <el-button native-type="submit">Entrar</el-button>
+        <el-button class="botao-entrar" native-type="submit">Entrar</el-button>
       </el-form>
     </el-card>
   </main>
@@ -51,5 +51,9 @@ main {
 .token-card {
   width: 100%;
   max-width: 24rem;
+}
+
+.botao-entrar {
+  width: 100%;
 }
 </style>
