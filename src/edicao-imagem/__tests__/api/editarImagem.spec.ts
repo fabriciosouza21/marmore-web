@@ -24,6 +24,31 @@ function mockarFetchSse(chunks: string[]): void {
 describe('editarImagem', () => {
   afterEach(() => vi.unstubAllGlobals())
 
+  it('envia FormData multipart com parte image', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(criarStreamSse(['data:{"latency_ms":1}\n\ndata:img\n\n']), { status: 200 }),
+    )
+    vi.stubGlobal('fetch', fetchMock)
+
+    const imagem = new Blob(['conteudo'], { type: 'image/png' })
+    await editarImagem({ apiKey: 'minha-key', image: imagem }).run()
+
+    const [url, init] = fetchMock.mock.calls[0]
+    expect(url).toBe('/images/edit')
+    expect(init.method).toBe('POST')
+    expect(init.body).toBeInstanceOf(FormData)
+
+    const parte = init.body.get('image')
+    expect(parte).toBeInstanceOf(Blob)
+    expect(parte.type).toBe('image/png')
+    await expect(parte.text()).resolves.toBe('conteudo')
+
+    expect(init.headers).toEqual({
+      'X-API-Key': 'minha-key',
+      Accept: 'text/event-stream',
+    })
+  })
+
   it('resolve com imagemBase64 quando o stream envia conclusão seguida de imagem', async () => {
     mockarFetchSse(['data:{"latency_ms":12345}\n\ndata:ZmFrZS1pbWFnZW0x\n\n'])
 

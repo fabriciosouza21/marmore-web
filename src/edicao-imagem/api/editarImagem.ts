@@ -70,13 +70,16 @@ export function editarImagem(opts: { apiKey: string; image: Blob }): ConstrutorE
   let onFaseFn: ((fase: EdicaoFase) => void) | null = null
 
   const run = async (): Promise<ResultadoEdicao> => {
+    const body = new FormData()
+    body.append('image', opts.image)
+
     const response = await fetch('/images/edit', {
       method: 'POST',
       headers: {
         'X-API-Key': opts.apiKey,
         Accept: 'text/event-stream',
       },
-      body: opts.image,
+      body,
     })
 
     if (!response.ok) throw new HttpError(response.status)
