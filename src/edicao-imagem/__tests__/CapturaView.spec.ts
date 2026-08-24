@@ -112,6 +112,40 @@ describe('CapturaView', () => {
     expect(wrapper.text()).toContain('Gerando')
   })
 
+  it('mostra o passo a passo com o passo atual em destaque', async () => {
+    mockarFetchSse([
+      'data:{"fase":"recebido"}\n\ndata:{"fase":"redimensionando"}\n\ndata:{"latency_ms":1}\n\ndata:img\n\n',
+    ])
+    const wrapper = mount(CapturaView)
+
+    await selecionarArquivo(wrapper, new File(['conteudo'], 'foto.png', { type: 'image/png' }))
+    await flushPromises()
+
+    const lista = wrapper.find('ol.passos')
+    expect(lista.exists()).toBe(true)
+    const passos = lista.findAll('li')
+    expect(passos).toHaveLength(3)
+
+    // ultima fase recebida e 'redimensionando' (indice 1): Recebido concluido,
+    // Redimensionando atual, Gerando pendente.
+    const acharPasso = (rotulo: string) => passos.find((li) => li.text().includes(rotulo))
+
+    const recebido = acharPasso('Recebido')
+    expect(recebido).toBeDefined()
+    expect(recebido!.classes()).toContain('concluido')
+    // o check fica como texto dentro do .marcador do passo concluido
+    expect(recebido!.text()).toContain('✓')
+
+    const redimensionando = acharPasso('Redimensionando')
+    expect(redimensionando).toBeDefined()
+    expect(redimensionando!.classes()).toContain('atual')
+    expect(redimensionando!.text()).not.toContain('✓')
+
+    const gerando = acharPasso('Gerando')
+    expect(gerando).toBeDefined()
+    expect(gerando!.classes()).toContain('pendente')
+  })
+
   it('exibe card de resultado com imagem, download e custo quando presentes', async () => {
     mockarFetchSse([
       'data:{"fase":"recebido"}\n\ndata:{"latency_ms":12345,"custo_brl":0.27}\n\ndata:aW1hZ2VtLWVkaXRhZGE=\n\n',
@@ -289,7 +323,9 @@ describe('CapturaView', () => {
 
     resolver(
       new Response(
-        criarStreamSse(['data:{"fase":"redimensionando"}\n\ndata:{"latency_ms":1}\n\ndata:img\n\n']),
+        criarStreamSse([
+          'data:{"fase":"redimensionando"}\n\ndata:{"latency_ms":1}\n\ndata:img\n\n',
+        ]),
         { status: 200 },
       ),
     )

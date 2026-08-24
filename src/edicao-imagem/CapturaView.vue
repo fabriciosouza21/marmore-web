@@ -16,6 +16,15 @@ const rotuloAtual = computed(() =>
 const percentualFase = computed(() =>
   fase.value ? ((indicePorFase[fase.value] + 1) / 3) * 100 : 0,
 )
+const ordemDeFases = ['recebido', 'redimensionando', 'gerando'] as const
+
+function classeDoPasso(passo: (typeof ordemDeFases)[number]): string {
+  const atual = fase.value ? indicePorFase[fase.value] : -1
+  const indice = indicePorFase[passo]
+  if (indice < atual) return 'concluido'
+  if (indice === atual) return 'atual'
+  return 'pendente'
+}
 
 const dataUrl = computed(() =>
   resultado.value ? `data:image/png;base64,${resultado.value.imagemBase64}` : undefined,
@@ -100,6 +109,16 @@ function aoSelecionar(event: Event): void {
 
       <div v-if="processando || fase" class="progresso">
         <p><span class="girando" aria-hidden="true"></span>{{ rotuloAtual }}</p>
+        <ol class="passos">
+          <li
+            v-for="passo in ordemDeFases"
+            :key="passo"
+            :class="classeDoPasso(passo)"
+          >
+            <span class="marcador" aria-hidden="true">{{ classeDoPasso(passo) === 'concluido' ? '✓' : '' }}</span>
+            {{ rotulosDaFase[passo] }}
+          </li>
+        </ol>
         <el-progress :percentage="percentualFase" :show-text="false" :stroke-width="6" />
       </div>
 
@@ -151,6 +170,54 @@ h2 {
 
 .progresso p {
   margin: 0 0 0.5rem;
+}
+
+.passos {
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  font-size: var(--text-label);
+  color: var(--el-text-color-secondary);
+}
+
+.passos li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.passos li.atual {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.passos .marcador {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.125em;
+  height: 1.125em;
+  font-size: 0.8em;
+}
+
+.passos li.pendente .marcador {
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+.passos li.atual .marcador {
+  width: 0.625em;
+  height: 0.625em;
+  background: var(--color-primary);
+  border-radius: 50%;
+}
+
+.passos li.concluido .marcador {
+  color: var(--color-primary);
 }
 
 .cartao-resultado img {
