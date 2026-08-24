@@ -25,9 +25,11 @@ describe('editarImagem', () => {
   afterEach(() => vi.unstubAllGlobals())
 
   it('envia FormData multipart com parte image', async () => {
-    const fetchMock = vi.fn().mockResolvedValue(
-      new Response(criarStreamSse(['data:{"latency_ms":1}\n\ndata:img\n\n']), { status: 200 }),
-    )
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(
+        new Response(criarStreamSse(['data:{"latency_ms":1}\n\ndata:img\n\n']), { status: 200 }),
+      )
     vi.stubGlobal('fetch', fetchMock)
 
     const imagem = new Blob(['conteudo'], { type: 'image/png' })
