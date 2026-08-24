@@ -23,8 +23,8 @@ defineExpose({ onSubmit })
   <main>
     <el-card class="token-card">
       <template #header>
-        <h2>Acesso à API key</h2>
-        <p>Cole a chave de acesso para usar o editor de fotos.</p>
+        <h2 class="titulo-tela">Acesso à API key</h2>
+        <p class="token-descricao">Cole a chave de acesso para usar o editor de fotos.</p>
       </template>
 
       <el-form @submit.prevent="onSubmit">
@@ -51,6 +51,11 @@ main {
 .token-card {
   width: 100%;
   max-width: 24rem;
+}
+
+.token-descricao {
+  color: var(--el-text-color-secondary);
+  margin: 0.5rem 0 0;
 }
 
 .botao-entrar {

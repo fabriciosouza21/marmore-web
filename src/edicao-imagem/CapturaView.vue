@@ -32,6 +32,7 @@ function aoSelecionar(event: Event): void {
 
 <template>
   <section>
+    <h2 class="titulo-tela">Editar foto do ambiente</h2>
     <div v-if="resultado" class="cartao-resultado">
       <img :src="dataUrl" alt="Ambiente editado" />
       <a :href="dataUrl" download="ambiente-editado.png">Baixar</a>
@@ -81,7 +82,10 @@ function aoSelecionar(event: Event): void {
         <el-button class="botao-envio" @click="abrirArquivo">Enviar arquivo</el-button>
       </template>
 
-      <p v-if="processando">Processando a foto...</p>
+      <p v-if="processando">
+        <span class="girando" aria-hidden="true"></span>
+        Processando a foto...
+      </p>
 
       <el-steps simple :active="indiceFase" finish-status="success">
         <el-step title="Recebido" />

@@ -224,6 +224,31 @@ describe('CapturaView', () => {
     expect(wrapper.text()).not.toContain('Processando a foto')
   })
 
+  it('exibe titulo da tela de edicao', () => {
+    const wrapper = mount(CapturaView)
+
+    expect(wrapper.find('h2').text()).toBe('Editar foto do ambiente')
+  })
+
+  it('mostra spinner enquanto processa', async () => {
+    let resolver!: (value: Response) => void
+    const respostaPendente = new Promise<Response>((r) => {
+      resolver = r
+    })
+    vi.stubGlobal('fetch', vi.fn().mockReturnValue(respostaPendente))
+    const wrapper = mount(CapturaView)
+
+    await selecionarArquivo(wrapper, new File(['conteudo'], 'foto.png', { type: 'image/png' }))
+    await flushPromises()
+    expect(wrapper.find('.girando').exists()).toBe(true)
+
+    resolver(
+      new Response(criarStreamSse(['data:{"latency_ms":1}\n\ndata:img\n\n']), { status: 200 }),
+    )
+    await flushPromises()
+    expect(wrapper.find('.girando').exists()).toBe(false)
+  })
+
   it('mostra instrucao inicial quando nada foi enviado', () => {
     const wrapper = mount(CapturaView)
 

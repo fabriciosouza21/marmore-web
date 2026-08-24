@@ -44,6 +44,7 @@
   --el-color-error-light-9: color-mix(in srgb, var(--color-danger) 10%, white);
   --el-border-radius-base: var(--radius-md);
   --el-font-family: var(--font-body);
+  --el-text-color-placeholder: #6b7076;
 }
 
 html.dark {
@@ -59,4 +60,41 @@ html.dark {
   --el-color-error-light-8: color-mix(in srgb, var(--color-danger) 20%, black);
   --el-color-error-light-9: color-mix(in srgb, var(--color-danger) 10%, black);
   --el-color-error-dark-2: color-mix(in srgb, var(--color-danger) 70%, white);
+}
+
+/* Spinner de carregamento (feedback funcional, nao decorativo) */
+.girando {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  vertical-align: -0.125em;
+  margin-right: 0.5rem;
+  animation: girar 0.8s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Tipografia display dos titulos de tela (token --text-display do DESIGN.md) */
+.titulo-tela {
+  font-size: var(--text-display);
+  font-weight: var(--font-weight-display);
+  line-height: 1.2;
+}
+
+/* Feedback tatil de pressionar (motion de feedback, gate por reduced-motion) */
+@media (prefers-reduced-motion: no-preference) {
+  .el-button {
+    transition: transform 0.1s ease;
+  }
+
+  .el-button:active {
+    transform: scale(0.98);
+  }
 }

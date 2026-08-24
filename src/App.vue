@@ -13,7 +13,7 @@ const { sair } = useToken()
   <RouterView />
 
   <ThemeToggle class="theme-toggle" />
-  <button v-if="autenticado" @click="sair">Sair</button>
+  <el-button v-if="autenticado" class="botao-sair" text @click="sair">Sair</el-button>
 </template>
 
 <style scoped>
@@ -21,5 +21,11 @@ const { sair } = useToken()
   position: absolute;
   top: 1rem;
   right: 1rem;
+}
+
+.botao-sair {
+  position: absolute;
+  top: 1rem;
+  right: 3.5rem;
 }
 </style>
