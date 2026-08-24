@@ -136,6 +136,8 @@ h2 {
 }
 
 .botao-envio + .botao-envio {
+  /* zera o margin-left de 12px que o element-plus aplica entre el-buttons */
+  margin-left: 0;
   margin-top: 0.75rem;
 }
 
