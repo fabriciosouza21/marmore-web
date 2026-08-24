@@ -57,5 +57,5 @@
 | 2 | Tela 1: entrada da API key (TokenView) | 1 | [x] |
 | 3 | Tela 2: captura/upload da foto do ambiente | 1 | [x] |
 | 4 | Resultado, custo e tratamento de erros | 3 | [x] |
-| 5 | Polimento UX e testes | 4 | [ ] |
+| 5 | Polimento UX e testes | 4 | [x] |
 | 6 | Changelog e versão 0.1.0 | 5 | [ ] |
