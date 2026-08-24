@@ -125,7 +125,9 @@ describe('useEditarImagem', () => {
 
     resolver!(
       new Response(
-        criarStreamSse(['data:{"fase":"gerando"}\n\ndata:{"latency_ms":1}\n\ndata:ZmFrZS1pbWFnZW0x\n\n']),
+        criarStreamSse([
+          'data:{"fase":"gerando"}\n\ndata:{"latency_ms":1}\n\ndata:ZmFrZS1pbWFnZW0x\n\n',
+        ]),
         { status: 200 },
       ),
     )

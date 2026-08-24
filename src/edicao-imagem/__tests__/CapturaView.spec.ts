@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { mount, flushPromises, type VueWrapper } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
-import { ElSteps } from 'element-plus'
+import { ElButton, ElSteps } from 'element-plus'
 
 const pushMock = vi.hoisted(() => vi.fn())
 // Caso 1 monta a view com o composable mockado (espia submeter); casos 2 e 3
@@ -176,5 +176,63 @@ describe('CapturaView', () => {
 
     expect(wrapper.find('input[type="file"]').exists()).toBe(true)
     expect(wrapper.text()).not.toContain('falhou')
+  })
+
+  it('oferece botoes de tirar foto e enviar arquivo escondendo os inputs nativos', () => {
+    const wrapper = mount(CapturaView)
+
+    const acharBotao = (texto: string) =>
+      wrapper.findAllComponents(ElButton).find((b) => b.text().includes(texto))
+    expect(acharBotao('Tirar foto')).toBeDefined()
+    expect(acharBotao('Enviar arquivo')).toBeDefined()
+
+    const inputCamera = wrapper.find('input[capture]')
+    const inputArquivo = wrapper.find('input[type="file"]:not([capture])')
+    expect(inputCamera.exists()).toBe(true)
+    expect(inputCamera.attributes('hidden')).toBeDefined()
+    expect(inputArquivo.exists()).toBe(true)
+    expect(inputArquivo.attributes('hidden')).toBeDefined()
+  })
+
+  it('clicar tirar foto aciona o input da camera', async () => {
+    const wrapper = mount(CapturaView)
+    const spy = vi.spyOn(wrapper.find('input[capture]').element, 'click')
+
+    const acao = acharAcao(wrapper, 'Tirar foto')
+    expect(acao).toBeDefined()
+    await acao!.trigger('click')
+
+    expect(spy).toHaveBeenCalledTimes(1)
+  })
+
+  it('mostra indicador de processamento durante o envio', async () => {
+    let resolver!: (value: Response) => void
+    const respostaPendente = new Promise<Response>((r) => {
+      resolver = r
+    })
+    vi.stubGlobal('fetch', vi.fn().mockReturnValue(respostaPendente))
+    const wrapper = mount(CapturaView)
+
+    await selecionarArquivo(wrapper, new File(['conteudo'], 'foto.png', { type: 'image/png' }))
+    await flushPromises()
+    expect(wrapper.text()).toContain('Processando a foto')
+
+    resolver(
+      new Response(criarStreamSse(['data:{"latency_ms":1}\n\ndata:img\n\n']), { status: 200 }),
+    )
+    await flushPromises()
+    expect(wrapper.text()).not.toContain('Processando a foto')
+  })
+
+  it('mostra instrucao inicial quando nada foi enviado', () => {
+    const wrapper = mount(CapturaView)
+
+    expect(wrapper.text()).toContain('Tire uma foto do ambiente ou envie um arquivo JPG/PNG.')
+  })
+
+  it('usa steps compactos (simple)', () => {
+    const wrapper = mount(CapturaView)
+
+    expect(wrapper.findComponent(ElSteps).props('simple')).toBe(true)
   })
 })

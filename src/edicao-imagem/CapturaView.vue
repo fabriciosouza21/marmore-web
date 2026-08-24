@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useEditarImagem } from './composables/useEditarImagem'
 
-const { fase, resultado, erro, submeter, reiniciar } = useEditarImagem()
+const { fase, resultado, erro, processando, submeter, reiniciar } = useEditarImagem()
 
 const indicePorFase = { recebido: 0, redimensionando: 1, gerando: 2 }
 const indiceFase = computed(() => (fase.value ? indicePorFase[fase.value] : -1))
@@ -10,6 +10,17 @@ const indiceFase = computed(() => (fase.value ? indicePorFase[fase.value] : -1))
 const dataUrl = computed(() =>
   resultado.value ? `data:image/png;base64,${resultado.value.imagemBase64}` : undefined,
 )
+
+const inputCamera = ref<HTMLInputElement | null>(null)
+const inputArquivo = ref<HTMLInputElement | null>(null)
+
+function abrirCamera(): void {
+  inputCamera.value?.click()
+}
+
+function abrirArquivo(): void {
+  inputArquivo.value?.click()
+}
 
 function aoSelecionar(event: Event): void {
   const input = event.target as HTMLInputElement
@@ -21,7 +32,7 @@ function aoSelecionar(event: Event): void {
 
 <template>
   <section>
-    <div v-if="resultado">
+    <div v-if="resultado" class="cartao-resultado">
       <img :src="dataUrl" alt="Ambiente editado" />
       <a :href="dataUrl" download="ambiente-editado.png">Baixar</a>
       <p v-if="resultado.metadados?.custoBrl != null">
@@ -41,14 +52,38 @@ function aoSelecionar(event: Event): void {
         }}
         s
       </p>
-      <el-button @click="reiniciar">Editar outra foto</el-button>
+      <el-button class="botao-cheio" @click="reiniciar">Editar outra foto</el-button>
     </div>
 
     <div v-show="!resultado">
-      <input type="file" accept="image/*" capture="environment" @change="aoSelecionar" />
-      <input type="file" accept="image/jpeg,image/png" @change="aoSelecionar" />
+      <p v-if="!fase && !processando && !erro">
+        Tire uma foto do ambiente ou envie um arquivo JPG/PNG.
+      </p>
 
-      <el-steps :active="indiceFase" finish-status="success">
+      <input
+        ref="inputCamera"
+        type="file"
+        accept="image/*"
+        capture="environment"
+        hidden
+        @change="aoSelecionar"
+      />
+      <input
+        ref="inputArquivo"
+        type="file"
+        accept="image/jpeg,image/png"
+        hidden
+        @change="aoSelecionar"
+      />
+
+      <template v-if="!processando">
+        <el-button class="botao-envio" @click="abrirCamera">Tirar foto</el-button>
+        <el-button class="botao-envio" @click="abrirArquivo">Enviar arquivo</el-button>
+      </template>
+
+      <p v-if="processando">Processando a foto...</p>
+
+      <el-steps simple :active="indiceFase" finish-status="success">
         <el-step title="Recebido" />
         <el-step title="Redimensionando" />
         <el-step title="Gerando" />
@@ -60,3 +95,28 @@ function aoSelecionar(event: Event): void {
     </div>
   </section>
 </template>
+
+<style scoped>
+section {
+  max-width: 28rem;
+  margin-inline: auto;
+  padding: 1rem;
+}
+
+.botao-envio {
+  width: 100%;
+}
+
+.botao-envio + .botao-envio {
+  margin-top: 0.75rem;
+}
+
+.cartao-resultado img {
+  max-width: 100%;
+}
+
+.botao-cheio {
+  width: 100%;
+  margin-top: 0.75rem;
+}
+</style>
