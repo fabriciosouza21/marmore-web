@@ -25,10 +25,12 @@ describe('TokenView', () => {
     const wrapper = mount(TokenView)
 
     await wrapper.find('form').trigger('submit')
-    // vee-validate encadeia microtasks ao validar: dois flushes para o erro
-    // propagar ao estado reativo (comprovado: falha com apenas um).
+    // vee-validate encadeia microtasks ao validar e so conclui o handleSubmit
+    // apos uma macrotask (debounce interno): dois flushes limpam as microtasks,
+    // a espera de 50ms deixa o debounce vencer (comprovado: 0ms nao basta).
     await flushPromises()
     await flushPromises()
+    await new Promise((resolver) => setTimeout(resolver, 50))
 
     // Assertionamos o prop :error do el-form-item (e nao wrapper.text()) para
     // provar o BINDING: errors.apiKey -> el-form-item. O texto em si nao renderiza
