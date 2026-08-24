@@ -14,6 +14,7 @@ export function useEditarImagem() {
   const fase = ref<EdicaoFase | null>(null)
   const resultado = ref<ResultadoEdicao | null>(null)
   const erro = ref<string | null>(null)
+  const processando = ref(false)
 
   async function submeter(file: File): Promise<void> {
     const mensagem = validarFoto({ tipo: file.type, tamanho: file.size })
@@ -22,6 +23,7 @@ export function useEditarImagem() {
       return
     }
 
+    processando.value = true
     try {
       resultado.value = await editarImagem({ apiKey: auth.apiKey, image: file })
         .onFase((f) => {
@@ -44,6 +46,8 @@ export function useEditarImagem() {
         return
       }
       throw e
+    } finally {
+      processando.value = false
     }
   }
 
@@ -53,5 +57,5 @@ export function useEditarImagem() {
     erro.value = null
   }
 
-  return { fase, resultado, erro, submeter, reiniciar }
+  return { fase, resultado, erro, processando, submeter, reiniciar }
 }

@@ -110,4 +110,40 @@ describe('useEditarImagem', () => {
     expect(erro.value).toBeNull()
     expect(useAuthStore().autenticado).toBe(true)
   })
+
+  it('sinaliza processando durante o envio e desliga ao concluir', async () => {
+    let resolver: (resposta: Response) => void
+    const respostaPromise = new Promise<Response>((r) => {
+      resolver = r
+    })
+    vi.stubGlobal('fetch', vi.fn().mockReturnValue(respostaPromise))
+    const { processando, resultado, submeter } = useEditarImagem()
+
+    const submeterPromise = submeter(new File(['conteudo'], 'foto.png', { type: 'image/png' }))
+
+    expect(processando.value).toBe(true)
+
+    resolver!(
+      new Response(
+        criarStreamSse(['data:{"fase":"gerando"}\n\ndata:{"latency_ms":1}\n\ndata:ZmFrZS1pbWFnZW0x\n\n']),
+        { status: 200 },
+      ),
+    )
+
+    await submeterPromise
+
+    expect(processando.value).toBe(false)
+    expect(resultado.value?.imagemBase64).toBe('ZmFrZS1pbWFnZW0x')
+  })
+
+  it('nao ativa processando quando a validacao falha', async () => {
+    const fetchMock = vi.fn()
+    vi.stubGlobal('fetch', fetchMock)
+    const { processando, submeter } = useEditarImagem()
+
+    await submeter(new File(['conteudo'], 'foto.webp', { type: 'image/webp' }))
+
+    expect(processando.value).toBe(false)
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
 })
