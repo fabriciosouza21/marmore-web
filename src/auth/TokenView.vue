@@ -23,6 +23,7 @@ defineExpose({ onSubmit })
   <main>
     <el-card class="token-card">
       <template #header>
+        <p class="token-marca">Mármore</p>
         <h2 class="titulo-tela">Acesso à API key</h2>
         <p class="token-descricao">Cole a chave de acesso para usar o editor de fotos.</p>
       </template>
@@ -51,6 +52,15 @@ main {
 .token-card {
   width: 100%;
   max-width: 24rem;
+}
+
+.token-marca {
+  margin: 0 0 0.5rem;
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-primary);
 }
 
 .token-descricao {

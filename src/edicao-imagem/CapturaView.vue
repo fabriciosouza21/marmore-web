@@ -33,28 +33,34 @@ function aoSelecionar(event: Event): void {
 <template>
   <section>
     <h2 class="titulo-tela">Editar foto do ambiente</h2>
-    <div v-if="resultado" class="cartao-resultado">
-      <img :src="dataUrl" alt="Ambiente editado" />
-      <a :href="dataUrl" download="ambiente-editado.png">Baixar</a>
-      <p v-if="resultado.metadados?.custoBrl != null">
-        {{
-          resultado.metadados.custoBrl.toLocaleString('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-          })
-        }}
-      </p>
-      <p v-if="resultado.metadados">
-        {{
-          (resultado.metadados.latencyMs / 1000).toLocaleString('pt-BR', {
-            minimumFractionDigits: 1,
-            maximumFractionDigits: 1,
-          })
-        }}
-        s
-      </p>
-      <el-button class="botao-cheio" @click="reiniciar">Editar outra foto</el-button>
-    </div>
+    <Transition name="surgir">
+      <div v-if="resultado" class="cartao-resultado">
+        <img :src="dataUrl" alt="Ambiente editado" />
+        <a :href="dataUrl" download="ambiente-editado.png">Baixar</a>
+        <p class="metadados" v-if="resultado.metadados">
+          <span v-if="resultado.metadados.custoBrl != null">
+            Custo
+            <strong>{{
+              resultado.metadados.custoBrl.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+              })
+            }}</strong>
+          </span>
+          <span>
+            Duração
+            <strong>{{
+              (resultado.metadados.latencyMs / 1000).toLocaleString('pt-BR', {
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 1,
+              })
+            }}</strong>
+            s
+          </span>
+        </p>
+        <el-button class="botao-cheio" @click="reiniciar">Editar outra foto</el-button>
+      </div>
+    </Transition>
 
     <div v-show="!resultado">
       <p v-if="!fase && !processando && !erro">
@@ -78,7 +84,7 @@ function aoSelecionar(event: Event): void {
       />
 
       <template v-if="!processando">
-        <el-button class="botao-envio" @click="abrirCamera">Tirar foto</el-button>
+        <el-button class="botao-envio" type="primary" @click="abrirCamera">Tirar foto</el-button>
         <el-button class="botao-envio" @click="abrirArquivo">Enviar arquivo</el-button>
       </template>
 
@@ -105,6 +111,24 @@ section {
   max-width: 28rem;
   margin-inline: auto;
   padding: 1rem;
+}
+
+h2 {
+  margin: 0 0 1rem;
+}
+
+.metadados {
+  display: flex;
+  gap: 1.5rem;
+  margin: 0.75rem 0 0;
+  font-size: var(--text-label);
+  color: var(--el-text-color-secondary);
+}
+
+.metadados strong {
+  color: var(--el-text-color-primary);
+  font-weight: 600;
+  margin-left: 0.25rem;
 }
 
 .botao-envio {

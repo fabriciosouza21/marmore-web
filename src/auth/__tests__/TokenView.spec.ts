@@ -69,6 +69,14 @@ describe('TokenView', () => {
     expect(wrapper.findComponent(ElInput).exists()).toBe(true)
   })
 
+  it('exibe o wordmark Marmore no card', () => {
+    const wrapper = mount(TokenView)
+
+    const marca = wrapper.find('.token-marca')
+    expect(marca.exists()).toBe(true)
+    expect(marca.text()).toBe('Mármore')
+  })
+
   it('renderiza titulo e descricao deixando claro o campo de api key', () => {
     const wrapper = mount(TokenView)
 

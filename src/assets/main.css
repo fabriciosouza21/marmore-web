@@ -45,6 +45,32 @@
   --el-border-radius-base: var(--radius-md);
   --el-font-family: var(--font-body);
   --el-text-color-placeholder: #6b7076;
+  /* sombras tingidas de cobre: profundidade sem sombra preta genérica */
+  --el-box-shadow-light:
+    0 1px 2px rgb(160 81 45 / 0.06),
+    0 8px 24px rgb(160 81 45 / 0.07);
+}
+
+/* Tipografia display dos titulos de tela (token --text-display do DESIGN.md) */
+.titulo-tela {
+  font-size: var(--text-display);
+  font-weight: var(--font-weight-display);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+/* Entrada suave de estados (motion de state transition, gated) */
+@media (prefers-reduced-motion: no-preference) {
+  .surgir-enter-active {
+    transition:
+      opacity 0.25s ease-out,
+      transform 0.25s ease-out;
+  }
+
+  .surgir-enter-from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
 }
 
 html.dark {
@@ -79,13 +105,6 @@ html.dark {
   to {
     transform: rotate(360deg);
   }
-}
-
-/* Tipografia display dos titulos de tela (token --text-display do DESIGN.md) */
-.titulo-tela {
-  font-size: var(--text-display);
-  font-weight: var(--font-weight-display);
-  line-height: 1.2;
 }
 
 /* Feedback tatil de pressionar (motion de feedback, gate por reduced-motion) */

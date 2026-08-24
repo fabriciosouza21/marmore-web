@@ -194,6 +194,23 @@ describe('CapturaView', () => {
     expect(inputArquivo.attributes('hidden')).toBeDefined()
   })
 
+  it('destaca tirar foto como acao principal', () => {
+    const wrapper = mount(CapturaView)
+
+    const acharBotao = (texto: string) =>
+      wrapper.findAllComponents(ElButton).find((b) => b.text().includes(texto))
+    const tirarFoto = acharBotao('Tirar foto')!
+    const enviarArquivo = acharBotao('Enviar arquivo')!
+
+    // O caminho principal (camera no celular) e o unico destaque da tela;
+    // o envio de arquivo permanece visualmente secundario (default).
+    expect(tirarFoto).toBeDefined()
+    expect(tirarFoto.props('type')).toBe('primary')
+    expect(enviarArquivo).toBeDefined()
+    // default do element-plus materializa type como string vazia
+    expect(enviarArquivo.props('type') || undefined).toBeUndefined()
+  })
+
   it('clicar tirar foto aciona o input da camera', async () => {
     const wrapper = mount(CapturaView)
     const spy = vi.spyOn(wrapper.find('input[capture]').element as HTMLInputElement, 'click')
