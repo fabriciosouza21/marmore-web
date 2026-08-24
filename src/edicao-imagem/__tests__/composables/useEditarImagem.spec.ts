@@ -9,7 +9,7 @@ vi.mock('vue-router', () => ({
 }))
 
 vi.mock('element-plus', async (importOriginal) => ({
-  ...(await importOriginal() as object),
+  ...((await importOriginal()) as object),
   ElMessage: { error: vi.fn() },
 }))
 
