@@ -196,7 +196,7 @@ describe('CapturaView', () => {
 
   it('clicar tirar foto aciona o input da camera', async () => {
     const wrapper = mount(CapturaView)
-    const spy = vi.spyOn(wrapper.find('input[capture]').element, 'click')
+    const spy = vi.spyOn(wrapper.find('input[capture]').element as HTMLInputElement, 'click')
 
     const acao = acharAcao(wrapper, 'Tirar foto')
     expect(acao).toBeDefined()
