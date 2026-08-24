@@ -79,4 +79,35 @@ describe('useEditarImagem', () => {
     expect(ElMessage.error).toHaveBeenCalledWith('API key inválida. Entre novamente.')
     expect(pushMock).toHaveBeenCalledWith('/token')
   })
+
+  it('trata HttpError fora do 401 com mensagem amigavel', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(new Response('{"error":"foto rejeitada"}', { status: 400 })),
+    )
+    const { erro, submeter } = useEditarImagem()
+
+    await expect(
+      submeter(new File(['conteudo'], 'foto.png', { type: 'image/png' })),
+    ).resolves.toBeUndefined()
+
+    expect(erro.value).toBe('Não foi possível enviar a foto. Tente novamente.')
+  })
+
+  it('reiniciar zera o fluxo mantendo a key', async () => {
+    useAuthStore().entrar('key-valida')
+    mockarFetchSse([
+      'data:{"fase":"recebido"}\n\ndata:{"fase":"gerando"}\n\ndata:{"latency_ms":1}\n\ndata:ZmFrZS1pbWFnZW0x\n\n',
+    ])
+    const { fase, resultado, erro, submeter, reiniciar } = useEditarImagem()
+
+    await submeter(new File(['conteudo'], 'foto.png', { type: 'image/png' }))
+
+    reiniciar()
+
+    expect(fase.value).toBeNull()
+    expect(resultado.value).toBeNull()
+    expect(erro.value).toBeNull()
+    expect(useAuthStore().autenticado).toBe(true)
+  })
 })

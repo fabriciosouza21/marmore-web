@@ -39,9 +39,19 @@ export function useEditarImagem() {
         erro.value = e.message
         return
       }
+      if (e instanceof HttpError) {
+        erro.value = 'Não foi possível enviar a foto. Tente novamente.'
+        return
+      }
       throw e
     }
   }
 
-  return { fase, resultado, erro, submeter }
+  function reiniciar(): void {
+    fase.value = null
+    resultado.value = null
+    erro.value = null
+  }
+
+  return { fase, resultado, erro, submeter, reiniciar }
 }
