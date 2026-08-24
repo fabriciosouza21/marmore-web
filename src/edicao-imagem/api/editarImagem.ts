@@ -1,7 +1,7 @@
 import { despacharFrame, type ResultadoFrame } from './despacharFrame'
-import { EdicaoFalhouError, HttpError } from '../dominio/erros'
+import { EdicaoFalhouError, HttpError } from '../domain/errors'
 import { parsearFramesSse } from './parsearFramesSse'
-import type { EdicaoFase } from '../dominio/tipos'
+import type { EdicaoFase } from '../domain/types'
 
 type MetadadosEdicao = {
   latencyMs: number

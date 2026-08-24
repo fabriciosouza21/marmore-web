@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { editarImagem } from '../../cliente/editarImagem'
-import { EdicaoFalhouError, HttpError } from '../../dominio/erros'
+import { editarImagem } from '../../api/editarImagem'
+import { EdicaoFalhouError, HttpError } from '../../domain/errors'
 
 function criarStreamSse(chunks: string[]): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder()

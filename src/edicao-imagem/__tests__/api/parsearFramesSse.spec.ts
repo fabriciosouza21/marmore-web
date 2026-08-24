@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parsearFramesSse } from '../../cliente/parsearFramesSse'
+import { parsearFramesSse } from '../../api/parsearFramesSse'
 
 describe('parsearFramesSse', () => {
   it('extrai o payload de um frame completo', () => {

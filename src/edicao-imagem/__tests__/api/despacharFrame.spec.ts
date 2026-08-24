@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { despacharFrame } from '../../cliente/despacharFrame'
+import { despacharFrame } from '../../api/despacharFrame'
 
 describe('despacharFrame', () => {
   it('reconhece um payload de fase', () => {
