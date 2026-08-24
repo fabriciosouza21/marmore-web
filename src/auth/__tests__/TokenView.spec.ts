@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { useAuthStore } from '../authStore'
-import { ElForm, ElFormItem, ElInput } from 'element-plus'
+import { ElButton, ElForm, ElFormItem, ElInput } from 'element-plus'
 
 const pushMock = vi.hoisted(() => vi.fn())
 vi.mock('vue-router', () => ({
@@ -68,4 +68,26 @@ describe('TokenView', () => {
 
     expect(wrapper.findComponent(ElInput).exists()).toBe(true)
   })
+
+  it('renderiza titulo e descricao deixando claro o campo de api key', () => {
+    const wrapper = mount(TokenView)
+
+    expect(wrapper.text()).toContain('Acesso à API key')
+    expect(wrapper.text()).toContain('Cole a chave de acesso para usar o editor de fotos.')
+    expect(wrapper.find('input').attributes('placeholder')).toBe('Cole a API key aqui')
+  })
+
+  it('renderiza botao de submit com texto Entrar', () => {
+    const wrapper = mount(TokenView)
+
+    const botao = wrapper.findComponent(ElButton)
+    expect(botao.exists()).toBe(true)
+    expect(botao.text()).toContain('Entrar')
+    // el-button com native-type="submit" renderiza <button type="submit">;
+    // o prop type do element-plus (primary/default) so afeta classes.
+    expect(botao.attributes('type')).toBe('submit')
+  })
+  // O fluxo real clique -> submit -> navegacao nao e exercitavel no jsdom
+  // (dispatchEvent e click() nativo nao rodam o activation behavior de
+  // submit button); fica para o smoke e2e Playwright previsto no FE-5.
 })
