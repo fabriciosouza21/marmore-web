@@ -1,1 +1,62 @@
 @import 'tailwindcss';
+
+/* Tokens gerados de DESIGN.md: npx @google/design.md export DESIGN.md --format css-tailwind */
+@theme {
+  --color-surface-light: #f6f4f0;
+  --color-surface-dark: #1f2225;
+  --color-text-strong: #2a2d31;
+  --color-text-on-dark: #edeae4;
+  --color-primary: #a0512d;
+  --color-primary-deep: #7e3e22;
+  --color-danger: #b3261e;
+  --color-on-primary: #ffffff;
+  --font-display: "system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
+  --font-body: "system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
+  --font-label: "system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
+  --font-code: "ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace";
+  --text-display: 24px;
+  --text-body: 16px;
+  --text-label: 14px;
+  --text-code: 14px;
+  --font-weight-display: 600;
+  --font-weight-body: 400;
+  --font-weight-label: 500;
+  --font-weight-code: 400;
+  --radius-md: 0.5rem;
+  --radius-full: 9999px;
+}
+
+/* Element Plus herda a identidade; shades derivados por color-mix */
+:root {
+  --el-color-primary: var(--color-primary);
+  --el-color-primary-dark-2: var(--color-primary-deep);
+  --el-color-primary-light-3: color-mix(in srgb, var(--color-primary) 70%, white);
+  --el-color-primary-light-5: color-mix(in srgb, var(--color-primary) 50%, white);
+  --el-color-primary-light-7: color-mix(in srgb, var(--color-primary) 30%, white);
+  --el-color-primary-light-8: color-mix(in srgb, var(--color-primary) 20%, white);
+  --el-color-primary-light-9: color-mix(in srgb, var(--color-primary) 10%, white);
+  --el-color-error: var(--color-danger);
+  --el-color-error-dark-2: color-mix(in srgb, var(--color-danger) 70%, black);
+  --el-color-error-light-3: color-mix(in srgb, var(--color-danger) 70%, white);
+  --el-color-error-light-5: color-mix(in srgb, var(--color-danger) 50%, white);
+  --el-color-error-light-7: color-mix(in srgb, var(--color-danger) 30%, white);
+  --el-color-error-light-8: color-mix(in srgb, var(--color-danger) 20%, white);
+  --el-color-error-light-9: color-mix(in srgb, var(--color-danger) 10%, white);
+  --el-border-radius-base: var(--radius-md);
+  --el-font-family: var(--font-body);
+}
+
+html.dark {
+  --el-color-primary-light-3: color-mix(in srgb, var(--color-primary) 70%, black);
+  --el-color-primary-light-5: color-mix(in srgb, var(--color-primary) 50%, black);
+  --el-color-primary-light-7: color-mix(in srgb, var(--color-primary) 30%, black);
+  --el-color-primary-light-8: color-mix(in srgb, var(--color-primary) 20%, black);
+  --el-color-primary-light-9: color-mix(in srgb, var(--color-primary) 10%, black);
+  --el-color-primary-dark-2: color-mix(in srgb, var(--color-primary) 70%, white);
+  --el-color-error-light-3: color-mix(in srgb, var(--color-danger) 70%, black);
+  --el-color-error-light-5: color-mix(in srgb, var(--color-danger) 50%, black);
+  --el-color-error-light-7: color-mix(in srgb, var(--color-danger) 30%, black);
+  --el-color-error-light-8: color-mix(in srgb, var(--color-danger) 20%, black);
+  --el-color-error-light-9: color-mix(in srgb, var(--color-danger) 10%, black);
+  --el-color-error-dark-2: color-mix(in srgb, var(--color-danger) 70%, white);
+}
