@@ -46,9 +46,7 @@
   --el-font-family: var(--font-body);
   --el-text-color-placeholder: #6b7076;
   /* sombras tingidas de cobre: profundidade sem sombra preta genérica */
-  --el-box-shadow-light:
-    0 1px 2px rgb(160 81 45 / 0.06),
-    0 8px 24px rgb(160 81 45 / 0.07);
+  --el-box-shadow-light: 0 1px 2px rgb(160 81 45 / 0.06), 0 8px 24px rgb(160 81 45 / 0.07);
 }
 
 /* Tipografia display dos titulos de tela (token --text-display do DESIGN.md) */

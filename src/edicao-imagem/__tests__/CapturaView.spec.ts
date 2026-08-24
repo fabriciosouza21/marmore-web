@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { mount, flushPromises, type VueWrapper } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
-import { ElButton, ElSteps } from 'element-plus'
+import { ElButton, ElProgress } from 'element-plus'
 
 const pushMock = vi.hoisted(() => vi.fn())
 // Caso 1 monta a view com o composable mockado (espia submeter); casos 2 e 3
@@ -97,7 +97,7 @@ describe('CapturaView', () => {
     expect(fetchMock).not.toHaveBeenCalled()
   })
 
-  it('avanca os steps conforme as fases chegam', async () => {
+  it('avanca o progresso conforme as fases chegam', async () => {
     mockarFetchSse([
       'data:{"fase":"recebido"}\n\ndata:{"fase":"redimensionando"}\n\ndata:{"fase":"gerando"}\n\ndata:{"latency_ms":1}\n\ndata:ZmFrZS1pbWFnZW0x\n\n',
     ])
@@ -106,7 +106,10 @@ describe('CapturaView', () => {
     await selecionarArquivo(wrapper, new File(['conteudo'], 'foto.png', { type: 'image/png' }))
     await flushPromises()
 
-    expect(wrapper.findComponent(ElSteps).props('active')).toBe(2)
+    // fase permanece 'gerando' apos a conclusao (so reiniciar zera), entao a
+    // barra fica cheia mesmo com o card de resultado ja renderizado.
+    expect(wrapper.findComponent(ElProgress).props('percentage')).toBe(100)
+    expect(wrapper.text()).toContain('Gerando')
   })
 
   it('exibe card de resultado com imagem, download e custo quando presentes', async () => {
@@ -272,9 +275,27 @@ describe('CapturaView', () => {
     expect(wrapper.text()).toContain('Tire uma foto do ambiente ou envie um arquivo JPG/PNG.')
   })
 
-  it('usa steps compactos (simple)', () => {
+  it('exibe o rotulo da fase atual durante o envio', async () => {
+    let resolver!: (value: Response) => void
+    const respostaPendente = new Promise<Response>((r) => {
+      resolver = r
+    })
+    vi.stubGlobal('fetch', vi.fn().mockReturnValue(respostaPendente))
     const wrapper = mount(CapturaView)
 
-    expect(wrapper.findComponent(ElSteps).props('simple')).toBe(true)
+    await selecionarArquivo(wrapper, new File(['conteudo'], 'foto.png', { type: 'image/png' }))
+    await flushPromises()
+    expect(wrapper.text()).toContain('Processando a foto...')
+
+    resolver(
+      new Response(
+        criarStreamSse(['data:{"fase":"redimensionando"}\n\ndata:{"latency_ms":1}\n\ndata:img\n\n']),
+        { status: 200 },
+      ),
+    )
+    await flushPromises()
+    expect(wrapper.text()).toContain('Redimensionando')
+    // ((1+1)/3)*100 em IEEE da 66.66666666666667; toBeCloseTo evita acoplar ao floating point.
+    expect(wrapper.findComponent(ElProgress).props('percentage')).toBeCloseTo(66.67, 1)
   })
 })

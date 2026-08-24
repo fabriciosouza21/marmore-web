@@ -5,7 +5,17 @@ import { useEditarImagem } from './composables/useEditarImagem'
 const { fase, resultado, erro, processando, submeter, reiniciar } = useEditarImagem()
 
 const indicePorFase = { recebido: 0, redimensionando: 1, gerando: 2 }
-const indiceFase = computed(() => (fase.value ? indicePorFase[fase.value] : -1))
+const rotulosDaFase = {
+  recebido: 'Recebido',
+  redimensionando: 'Redimensionando',
+  gerando: 'Gerando',
+}
+const rotuloAtual = computed(() =>
+  fase.value ? rotulosDaFase[fase.value] : 'Processando a foto...',
+)
+const percentualFase = computed(() =>
+  fase.value ? ((indicePorFase[fase.value] + 1) / 3) * 100 : 0,
+)
 
 const dataUrl = computed(() =>
   resultado.value ? `data:image/png;base64,${resultado.value.imagemBase64}` : undefined,
@@ -88,16 +98,10 @@ function aoSelecionar(event: Event): void {
         <el-button class="botao-envio" @click="abrirArquivo">Enviar arquivo</el-button>
       </template>
 
-      <p v-if="processando">
-        <span class="girando" aria-hidden="true"></span>
-        Processando a foto...
-      </p>
-
-      <el-steps simple :active="indiceFase" finish-status="success">
-        <el-step title="Recebido" />
-        <el-step title="Redimensionando" />
-        <el-step title="Gerando" />
-      </el-steps>
+      <div v-if="processando || fase" class="progresso">
+        <p><span class="girando" aria-hidden="true"></span>{{ rotuloAtual }}</p>
+        <el-progress :percentage="percentualFase" :show-text="false" :stroke-width="6" />
+      </div>
 
       <el-alert v-if="erro" :title="erro" type="error" show-icon>
         <el-button @click="reiniciar">Tentar novamente</el-button>
@@ -139,6 +143,14 @@ h2 {
   /* zera o margin-left de 12px que o element-plus aplica entre el-buttons */
   margin-left: 0;
   margin-top: 0.75rem;
+}
+
+.progresso {
+  margin: 1rem 0;
+}
+
+.progresso p {
+  margin: 0 0 0.5rem;
 }
 
 .cartao-resultado img {
