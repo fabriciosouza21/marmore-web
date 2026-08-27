@@ -29,8 +29,11 @@
   --spacing-lg: 2rem;
 }
 
-/* Element Plus herda a identidade; shades derivados por color-mix */
-:root {
+/* Element Plus herda a identidade; shades derivados por color-mix.
+   html:root em vez de :root: o CSS base do Element Plus é injetado depois
+   deste arquivo pelo Vite e :root empataria (e perderia por ordem);
+   a especificidade extra garante que os tokens vençam em modo claro. */
+html:root {
   --el-color-primary: var(--color-primary);
   --el-color-primary-dark-2: var(--color-primary-deep);
   --el-color-primary-light-3: color-mix(in srgb, var(--color-primary) 70%, white);
@@ -47,9 +50,21 @@
   --el-color-error-light-9: color-mix(in srgb, var(--color-danger) 10%, white);
   --el-border-radius-base: var(--radius-md);
   --el-font-family: var(--font-body);
+  --el-text-color-primary: var(--color-text-strong);
+  --el-text-color-regular: var(--color-text-strong);
   --el-text-color-placeholder: #6b7076;
   /* sombras tingidas de cobre: profundidade sem sombra preta genérica */
   --el-box-shadow-light: 0 1px 2px rgb(160 81 45 / 0.06), 0 8px 24px rgb(160 81 45 / 0.07);
+}
+
+/* Card do DESIGN.md: superfície Limestone, não branco puro.
+   html .el-card vence o .el-card do Element Plus, que chega depois na cascata */
+html .el-card {
+  --el-card-bg-color: var(--color-surface-light);
+}
+
+html.dark .el-card {
+  --el-card-bg-color: var(--color-surface-dark);
 }
 
 /* Tipografia display dos titulos de tela (token --text-display do DESIGN.md) */
@@ -75,6 +90,8 @@
 }
 
 html.dark {
+  --el-text-color-primary: var(--color-text-on-dark);
+  --el-text-color-regular: var(--color-text-on-dark);
   --el-color-primary-light-3: color-mix(in srgb, var(--color-primary) 70%, black);
   --el-color-primary-light-5: color-mix(in srgb, var(--color-primary) 50%, black);
   --el-color-primary-light-7: color-mix(in srgb, var(--color-primary) 30%, black);
