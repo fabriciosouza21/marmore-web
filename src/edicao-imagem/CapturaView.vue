@@ -110,12 +110,10 @@ function aoSelecionar(event: Event): void {
       <div v-if="processando || fase" class="progresso">
         <p><span class="girando" aria-hidden="true"></span>{{ rotuloAtual }}</p>
         <ol class="passos">
-          <li
-            v-for="passo in ordemDeFases"
-            :key="passo"
-            :class="classeDoPasso(passo)"
-          >
-            <span class="marcador" aria-hidden="true">{{ classeDoPasso(passo) === 'concluido' ? '✓' : '' }}</span>
+          <li v-for="passo in ordemDeFases" :key="passo" :class="classeDoPasso(passo)">
+            <span class="marcador" aria-hidden="true">{{
+              classeDoPasso(passo) === 'concluido' ? '✓' : ''
+            }}</span>
             {{ rotulosDaFase[passo] }}
           </li>
         </ol>
