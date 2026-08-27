@@ -28,11 +28,11 @@ defineExpose({ onSubmit })
         <p class="token-descricao">Cole a chave de acesso para usar o editor de fotos.</p>
       </template>
 
-      <el-form @submit.prevent="onSubmit">
+      <el-form label-position="top" @submit.prevent="onSubmit">
         <el-form-item label="API key" :error="errors.apiKey">
           <el-input v-model="apiKey" v-bind="apiKeyProps" placeholder="Cole a API key aqui" />
         </el-form-item>
-        <el-button class="botao-entrar" native-type="submit">Entrar</el-button>
+        <el-button class="botao-entrar" type="primary" native-type="submit">Entrar</el-button>
       </el-form>
     </el-card>
   </main>

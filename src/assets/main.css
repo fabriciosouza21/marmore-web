@@ -29,6 +29,19 @@
   --spacing-lg: 2rem;
 }
 
+/* A tela de fundo segue as superfícies do DESIGN.md (Limestone/Basalto),
+   nunca branco puro: o canvas é a primeira superfície de pedra do app */
+body {
+  background-color: var(--color-surface-light);
+  color: var(--color-text-strong);
+  font-family: var(--font-body);
+}
+
+html.dark body {
+  background-color: var(--color-surface-dark);
+  color: var(--color-text-on-dark);
+}
+
 /* Element Plus herda a identidade; shades derivados por color-mix.
    html:root em vez de :root: o CSS base do Element Plus é injetado depois
    deste arquivo pelo Vite e :root empataria (e perderia por ordem);
