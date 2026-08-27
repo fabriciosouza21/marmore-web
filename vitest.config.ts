@@ -9,6 +9,15 @@ export default mergeConfig(
       environment: 'jsdom',
       exclude: [...configDefaults.exclude, 'e2e/**'],
       root: fileURLToPath(new URL('./', import.meta.url)),
+      // O ElementPlusResolver (vite.config) gera imports de .css do
+      // element-plus ao resolver el-* no SFC; o loader ESM do Node não
+      // carrega .css. Inlinar element-plus força o pipeline do Vite (que
+      // ignora CSS em teste), em vez do loader nativo.
+      server: {
+        deps: {
+          inline: ['element-plus'],
+        },
+      },
     },
   }),
 )

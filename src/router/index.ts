@@ -1,28 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+
+import { useAuthStore } from '@/auth/authStore'
+import TokenView from '@/auth/TokenView.vue'
+import { redirecionarAuth } from '@/auth/redirecionarAuth'
+import CapturaView from '@/edicao-imagem/CapturaView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: HomeView,
-    },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
-    },
-    {
-      path: '/login',
-      name: 'login',
-      component: () => import('../views/LoginView.vue'),
-    },
+    { path: '/token', component: TokenView },
+    { path: '/captura', component: CapturaView },
   ],
 })
+
+router.beforeEach((to) => redirecionarAuth(useAuthStore().autenticado, to.path))
 
 export default router

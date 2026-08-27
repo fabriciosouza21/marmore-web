@@ -67,3 +67,4 @@ Ferramenta de visualização: o usuário fotografa o balcão/cozinha/ambiente, a
 - Versão alvo: `0.1.0`.
 - Escopo: frontend apenas; backend pronto conforme `openapi.yaml`.
 - Resultado: inline na própria tela de captura (app fica em duas telas).
+- Mobile first: o uso principal é a foto do ambiente tirada no celular; telas desenhadas primeiro para viewport estreita (botões de alvo de toque, coluna única, `capture="environment"` como entrada principal).
