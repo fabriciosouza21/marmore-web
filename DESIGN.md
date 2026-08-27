@@ -35,6 +35,10 @@ typography:
 rounded:
   md: 0.5rem
   full: 9999px
+spacing:
+  sm: 0.5rem
+  md: 1rem
+  lg: 2rem
 components:
   button-primary:
     backgroundColor: '{colors.primary}'
@@ -89,7 +93,7 @@ A tipografia é a System UI Stack do sistema operacional, sem web font de downlo
 
 ## Layout
 
-Coluna única limitada a 28rem centralizada nas telas de fluxo; o card de token a 24rem. Espaçamento generoso nas bordas (1rem de padding mínimo) para respirar em telas estreitas. Nenhuma tela exige scroll horizontal em 360px de largura.
+Coluna única limitada a 28rem centralizada nas telas de fluxo; o card de token a 24rem. O ritmo vem da escala de espaçamento `sm` (0.5rem), `md` (1rem) e `lg` (2rem): `md` é o padding mínimo nas bordas para respirar em telas estreitas, `lg` separa a tela do viewport. Nenhuma tela exige scroll horizontal em 360px de largura.
 
 ## Components
 

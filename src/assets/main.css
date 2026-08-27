@@ -24,6 +24,9 @@
   --font-weight-code: 400;
   --radius-md: 0.5rem;
   --radius-full: 9999px;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 2rem;
 }
 
 /* Element Plus herda a identidade; shades derivados por color-mix */
