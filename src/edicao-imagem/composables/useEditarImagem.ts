@@ -1,6 +1,9 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+// Importado fora do template, o ElMessage não passa pelo ElementPlusResolver;
+// sem o estilo manual, o toast aparece sem formatação.
+import 'element-plus/es/components/message/style/css'
 import { useAuthStore } from '../../auth/authStore'
 import { editarImagem, type ResultadoEdicao } from '../api/editarImagem'
 import { EdicaoFalhouError, HttpError } from '../domain/errors'

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Moon, Sunny } from '@element-plus/icons-vue'
 import { useDark, useToggle } from '@vueuse/core'
 
 // useDark adiciona/remove a classe "dark" no <html>, que é o gatilho
