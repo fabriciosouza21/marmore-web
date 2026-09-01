@@ -43,3 +43,5 @@ playwright-report/
 
 # Handoff notes (agent coordination artifacts, not source)
 .handoff/
+
+.env
