@@ -66,12 +66,17 @@ export type ConstrutorEdicao = {
   run(): Promise<ResultadoEdicao>
 }
 
-export function editarImagem(opts: { apiKey: string; image: Blob }): ConstrutorEdicao {
+export function editarImagem(opts: {
+  apiKey: string
+  image: Blob
+  pedra: string
+}): ConstrutorEdicao {
   let onFaseFn: ((fase: EdicaoFase) => void) | null = null
 
   const run = async (): Promise<ResultadoEdicao> => {
     const body = new FormData()
     body.append('image', opts.image)
+    body.append('pedra', opts.pedra)
 
     // Em producao VITE_API_URL aponta para a API (build com .env.production);
     // em dev fica vazia e o proxy do vite encaminha /images para localhost:8080.

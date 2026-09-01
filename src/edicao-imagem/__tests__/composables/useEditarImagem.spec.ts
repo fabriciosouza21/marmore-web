@@ -48,7 +48,7 @@ describe('useEditarImagem', () => {
     ])
     const { fase, resultado, submeter } = useEditarImagem()
 
-    await submeter(new File(['conteudo'], 'foto.png', { type: 'image/png' }))
+    await submeter(new File(['conteudo'], 'foto.png', { type: 'image/png' }), 'verde_ubatuba')
 
     expect(fase.value).toBe('gerando')
     expect(resultado.value?.imagemBase64).toBe('ZmFrZS1pbWFnZW0x')
@@ -59,10 +59,43 @@ describe('useEditarImagem', () => {
     vi.stubGlobal('fetch', fetchMock)
     const { erro, submeter } = useEditarImagem()
 
-    await submeter(new File(['conteudo'], 'foto.webp', { type: 'image/webp' }))
+    await submeter(new File(['conteudo'], 'foto.webp', { type: 'image/webp' }), 'verde_ubatuba')
 
     expect(erro.value).toBe('Formato inválido. Envie uma foto JPG ou PNG.')
     expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('exige a pedra: sem pedra define erro amigavel e nao chama a api', async () => {
+    const fetchMock = vi.fn()
+    vi.stubGlobal('fetch', fetchMock)
+    const { erro, submeter } = useEditarImagem()
+
+    await submeter(new File(['conteudo'], 'foto.png', { type: 'image/png' }), '')
+
+    expect(erro.value).toBe('Escolha a pedra da bancada antes de enviar.')
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('envia a pedra escolhida na requisicao e conclui o fluxo', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(
+        new Response(
+          criarStreamSse([
+            'data:{"fase":"recebido"}\n\ndata:{"latency_ms":1}\n\ndata:ZmFrZS1pbWFnZW0x\n\n',
+          ]),
+          { status: 200 },
+        ),
+      )
+    vi.stubGlobal('fetch', fetchMock)
+    const { resultado, submeter } = useEditarImagem()
+
+    await submeter(new File(['conteudo'], 'foto.png', { type: 'image/png' }), 'verde_ubatuba')
+
+    const [, init] = fetchMock.mock.calls[0]
+    expect(init.body).toBeInstanceOf(FormData)
+    expect(init.body.get('pedra')).toBe('verde_ubatuba')
+    expect(resultado.value?.imagemBase64).toBe('ZmFrZS1pbWFnZW0x')
   })
 
   it('limpa a key, avisa e volta ao /token no 401', async () => {
@@ -73,7 +106,7 @@ describe('useEditarImagem', () => {
     )
     const { submeter } = useEditarImagem()
 
-    await submeter(new File(['conteudo'], 'foto.png', { type: 'image/png' }))
+    await submeter(new File(['conteudo'], 'foto.png', { type: 'image/png' }), 'verde_ubatuba')
 
     expect(useAuthStore().autenticado).toBe(false)
     expect(ElMessage.error).toHaveBeenCalledWith('API key inválida. Entre novamente.')
@@ -88,7 +121,7 @@ describe('useEditarImagem', () => {
     const { erro, submeter } = useEditarImagem()
 
     await expect(
-      submeter(new File(['conteudo'], 'foto.png', { type: 'image/png' })),
+      submeter(new File(['conteudo'], 'foto.png', { type: 'image/png' }), 'verde_ubatuba'),
     ).resolves.toBeUndefined()
 
     expect(erro.value).toBe('Não foi possível enviar a foto. Tente novamente.')
@@ -101,7 +134,7 @@ describe('useEditarImagem', () => {
     ])
     const { fase, resultado, erro, submeter, reiniciar } = useEditarImagem()
 
-    await submeter(new File(['conteudo'], 'foto.png', { type: 'image/png' }))
+    await submeter(new File(['conteudo'], 'foto.png', { type: 'image/png' }), 'verde_ubatuba')
 
     reiniciar()
 
@@ -119,7 +152,10 @@ describe('useEditarImagem', () => {
     vi.stubGlobal('fetch', vi.fn().mockReturnValue(respostaPromise))
     const { processando, resultado, submeter } = useEditarImagem()
 
-    const submeterPromise = submeter(new File(['conteudo'], 'foto.png', { type: 'image/png' }))
+    const submeterPromise = submeter(
+      new File(['conteudo'], 'foto.png', { type: 'image/png' }),
+      'verde_ubatuba',
+    )
 
     expect(processando.value).toBe(true)
 
@@ -143,7 +179,7 @@ describe('useEditarImagem', () => {
     vi.stubGlobal('fetch', fetchMock)
     const { processando, submeter } = useEditarImagem()
 
-    await submeter(new File(['conteudo'], 'foto.webp', { type: 'image/webp' }))
+    await submeter(new File(['conteudo'], 'foto.webp', { type: 'image/webp' }), 'verde_ubatuba')
 
     expect(processando.value).toBe(false)
     expect(fetchMock).not.toHaveBeenCalled()

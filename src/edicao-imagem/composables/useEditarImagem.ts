@@ -19,16 +19,25 @@ export function useEditarImagem() {
   const erro = ref<string | null>(null)
   const processando = ref(false)
 
-  async function submeter(file: File): Promise<void> {
+  async function submeter(file: File, pedraId?: string): Promise<void> {
     const mensagem = validarFoto({ tipo: file.type, tamanho: file.size })
     if (mensagem) {
       erro.value = mensagem
       return
     }
 
+    if (pedraId === '') {
+      erro.value = 'Escolha a pedra da bancada antes de enviar.'
+      return
+    }
+
     processando.value = true
     try {
-      resultado.value = await editarImagem({ apiKey: auth.apiKey, image: file })
+      resultado.value = await editarImagem({
+        apiKey: auth.apiKey,
+        image: file,
+        pedra: pedraId ?? '',
+      })
         .onFase((f) => {
           fase.value = f
         })

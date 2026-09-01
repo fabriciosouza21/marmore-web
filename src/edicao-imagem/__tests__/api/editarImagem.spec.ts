@@ -24,7 +24,7 @@ function mockarFetchSse(chunks: string[]): void {
 describe('editarImagem', () => {
   afterEach(() => vi.unstubAllGlobals())
 
-  it('envia FormData multipart com parte image', async () => {
+  it('envia FormData multipart com partes image e pedra', async () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValue(
@@ -33,7 +33,7 @@ describe('editarImagem', () => {
     vi.stubGlobal('fetch', fetchMock)
 
     const imagem = new Blob(['conteudo'], { type: 'image/png' })
-    await editarImagem({ apiKey: 'minha-key', image: imagem }).run()
+    await editarImagem({ apiKey: 'minha-key', image: imagem, pedra: 'verde_ubatuba' }).run()
 
     const [url, init] = fetchMock.mock.calls[0]
     expect(url).toBe('/images/edit')
@@ -45,6 +45,8 @@ describe('editarImagem', () => {
     expect(parte.type).toBe('image/png')
     await expect(parte.text()).resolves.toBe('conteudo')
 
+    expect(init.body.get('pedra')).toBe('verde_ubatuba')
+
     expect(init.headers).toEqual({
       'X-API-Key': 'minha-key',
       Accept: 'text/event-stream',
@@ -54,7 +56,11 @@ describe('editarImagem', () => {
   it('resolve com imagemBase64 quando o stream envia conclusão seguida de imagem', async () => {
     mockarFetchSse(['data:{"latency_ms":12345}\n\ndata:ZmFrZS1pbWFnZW0x\n\n'])
 
-    const result = await editarImagem({ apiKey: 'k', image: new Blob() }).run()
+    const result = await editarImagem({
+      apiKey: 'k',
+      image: new Blob(),
+      pedra: 'verde_ubatuba',
+    }).run()
 
     expect(result.imagemBase64).toBe('ZmFrZS1pbWFnZW0x')
   })
@@ -62,7 +68,11 @@ describe('editarImagem', () => {
   it('reconstrói a imagem quando o frame é dividido entre chunks', async () => {
     mockarFetchSse(['data:{"latency_ms":12345}\n\ndata:ZmFrZS', '1pbWFnZW0x\n\n'])
 
-    const result = await editarImagem({ apiKey: 'k', image: new Blob() }).run()
+    const result = await editarImagem({
+      apiKey: 'k',
+      image: new Blob(),
+      pedra: 'verde_ubatuba',
+    }).run()
 
     expect(result.imagemBase64).toBe('ZmFrZS1pbWFnZW0x')
   })
@@ -73,7 +83,7 @@ describe('editarImagem', () => {
     ])
 
     const fases: string[] = []
-    await editarImagem({ apiKey: 'k', image: new Blob() })
+    await editarImagem({ apiKey: 'k', image: new Blob(), pedra: 'verde_ubatuba' })
       .onFase((f) => fases.push(f))
       .run()
 
@@ -83,9 +93,9 @@ describe('editarImagem', () => {
   it('rejeita com EdicaoFalhouError quando o stream envia erro de domínio', async () => {
     mockarFetchSse(['data:{"error":"imagem indecodificavel","latency_ms":120}\n\n'])
 
-    await expect(editarImagem({ apiKey: 'k', image: new Blob() }).run()).rejects.toThrow(
-      new EdicaoFalhouError('imagem indecodificavel', 120),
-    )
+    await expect(
+      editarImagem({ apiKey: 'k', image: new Blob(), pedra: 'verde_ubatuba' }).run(),
+    ).rejects.toThrow(new EdicaoFalhouError('imagem indecodificavel', 120))
   })
 
   it('rejeita com HttpError quando o backend responde 401', async () => {
@@ -94,9 +104,9 @@ describe('editarImagem', () => {
       vi.fn().mockResolvedValue(new Response('{"error":"key invalida"}', { status: 401 })),
     )
 
-    await expect(editarImagem({ apiKey: 'k', image: new Blob() }).run()).rejects.toThrow(
-      new HttpError(401),
-    )
+    await expect(
+      editarImagem({ apiKey: 'k', image: new Blob(), pedra: 'verde_ubatuba' }).run(),
+    ).rejects.toThrow(new HttpError(401))
   })
 
   it('inclui metadados da conclusão no resultado', async () => {
@@ -104,7 +114,11 @@ describe('editarImagem', () => {
       'data:{"latency_ms":12345,"custo_brl":0.27,"usage":{"input_tokens":1200}}\n\ndata:img\n\n',
     ])
 
-    const result = await editarImagem({ apiKey: 'k', image: new Blob() }).run()
+    const result = await editarImagem({
+      apiKey: 'k',
+      image: new Blob(),
+      pedra: 'verde_ubatuba',
+    }).run()
 
     expect(result.metadados).toEqual({
       latencyMs: 12345,
@@ -119,7 +133,7 @@ describe('editarImagem', () => {
     ])
 
     const fases: string[] = []
-    await editarImagem({ apiKey: 'k', image: new Blob() })
+    await editarImagem({ apiKey: 'k', image: new Blob(), pedra: 'verde_ubatuba' })
       .onFase((f) => fases.push(f))
       .run()
 
