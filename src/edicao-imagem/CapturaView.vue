@@ -1,8 +1,22 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { buscarImagemPedra } from './api/buscarPedras'
 import { useEditarImagem } from './composables/useEditarImagem'
+import type { Pedra } from './domain/types'
+import { useAuthStore } from '../auth/authStore'
 
-const { fase, resultado, erro, processando, submeter, reiniciar } = useEditarImagem()
+const {
+  fase,
+  resultado,
+  erro,
+  processando,
+  pedras,
+  pedraSelecionada,
+  submeter,
+  reiniciar,
+  carregarPedras,
+} = useEditarImagem()
+const auth = useAuthStore()
 
 const indicePorFase = { recebido: 0, redimensionando: 1, gerando: 2 }
 const rotulosDaFase = {
@@ -30,6 +44,42 @@ const dataUrl = computed(() =>
   resultado.value ? `data:image/png;base64,${resultado.value.imagemBase64}` : undefined,
 )
 
+const gruposDePedras = computed(() => {
+  const grupos: { categoria: string; pedras: Pedra[] }[] = []
+  for (const pedra of pedras.value) {
+    const grupo = grupos.find((g) => g.categoria === pedra.categoria)
+    if (grupo) grupo.pedras.push(pedra)
+    else grupos.push({ categoria: pedra.categoria, pedras: [pedra] })
+  }
+  return grupos
+})
+
+const arquivo = ref<File | null>(null)
+const amostra = ref<string | null>(null)
+let urlAmostra: string | null = null
+
+onMounted(() => {
+  carregarPedras()
+})
+
+watch(pedraSelecionada, async (id) => {
+  if (urlAmostra) URL.revokeObjectURL(urlAmostra)
+  urlAmostra = null
+  amostra.value = null
+  if (!id) return
+  try {
+    const blob = await buscarImagemPedra({ id, apiKey: auth.apiKey })
+    urlAmostra = URL.createObjectURL(blob)
+    amostra.value = urlAmostra
+  } catch {
+    // a amostra é cosmética: falha ao carregar apenas omite a imagem
+  }
+})
+
+onBeforeUnmount(() => {
+  if (urlAmostra) URL.revokeObjectURL(urlAmostra)
+})
+
 const inputCamera = ref<HTMLInputElement | null>(null)
 const inputArquivo = ref<HTMLInputElement | null>(null)
 
@@ -41,11 +91,21 @@ function abrirArquivo(): void {
   inputArquivo.value?.click()
 }
 
-function aoSelecionar(event: Event): void {
+function aoEscolherArquivo(event: Event): void {
   const input = event.target as HTMLInputElement
-  const arquivo = input.files?.[0]
-  if (arquivo) submeter(arquivo)
+  const escolhido = input.files?.[0]
+  if (escolhido) arquivo.value = escolhido
   input.value = ''
+}
+
+function gerar(): void {
+  if (!arquivo.value) return
+  submeter(arquivo.value, pedraSelecionada.value)
+}
+
+function reiniciarFluxo(): void {
+  arquivo.value = null
+  reiniciar()
 }
 </script>
 
@@ -77,14 +137,29 @@ function aoSelecionar(event: Event): void {
             s
           </span>
         </p>
-        <el-button class="botao-cheio" @click="reiniciar">Editar outra foto</el-button>
+        <el-button class="botao-cheio" @click="reiniciarFluxo">Editar outra foto</el-button>
       </div>
     </Transition>
 
     <div v-show="!resultado">
-      <p v-if="!fase && !processando && !erro">
-        Tire uma foto do ambiente ou envie um arquivo JPG/PNG.
-      </p>
+      <p>Escolha a pedra da bancada</p>
+      <el-select v-model="pedraSelecionada" placeholder="Selecione a pedra" class="seletor-pedra">
+        <el-option-group
+          v-for="grupo in gruposDePedras"
+          :key="grupo.categoria"
+          :label="grupo.categoria"
+        >
+          <el-option
+            v-for="pedra in grupo.pedras"
+            :key="pedra.id"
+            :label="pedra.nome"
+            :value="pedra.id"
+          />
+        </el-option-group>
+      </el-select>
+      <img v-if="amostra" :src="amostra" alt="Amostra da pedra" class="amostra-pedra" />
+
+      <p>Tire uma foto do ambiente ou envie um arquivo JPG/PNG.</p>
 
       <input
         ref="inputCamera"
@@ -92,20 +167,29 @@ function aoSelecionar(event: Event): void {
         accept="image/*"
         capture="environment"
         hidden
-        @change="aoSelecionar"
+        @change="aoEscolherArquivo"
       />
       <input
         ref="inputArquivo"
         type="file"
         accept="image/jpeg,image/png"
         hidden
-        @change="aoSelecionar"
+        @change="aoEscolherArquivo"
       />
 
       <template v-if="!processando">
-        <el-button class="botao-envio" type="primary" @click="abrirCamera">Tirar foto</el-button>
+        <el-button class="botao-envio" @click="abrirCamera">Tirar foto</el-button>
         <el-button class="botao-envio" @click="abrirArquivo">Enviar arquivo</el-button>
       </template>
+
+      <el-button
+        class="botao-cheio"
+        type="primary"
+        :disabled="!pedraSelecionada || !arquivo || processando"
+        @click="gerar"
+      >
+        Gerar bancada
+      </el-button>
 
       <div v-if="processando || fase" class="progresso">
         <p><span class="girando" aria-hidden="true"></span>{{ rotuloAtual }}</p>
@@ -121,7 +205,7 @@ function aoSelecionar(event: Event): void {
       </div>
 
       <el-alert v-if="erro" :title="erro" type="error" show-icon>
-        <el-button @click="reiniciar">Tentar novamente</el-button>
+        <el-button @click="reiniciarFluxo">Tentar novamente</el-button>
       </el-alert>
     </div>
   </section>
@@ -136,6 +220,17 @@ section {
 
 h2 {
   margin: 0 0 1rem;
+}
+
+.seletor-pedra {
+  width: 100%;
+}
+
+.amostra-pedra {
+  display: block;
+  width: 100%;
+  margin-top: 0.75rem;
+  border-radius: var(--el-border-radius-base);
 }
 
 .metadados {

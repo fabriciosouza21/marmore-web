@@ -12,3 +12,13 @@ export async function buscarPedras(opts: { apiKey: string }): Promise<Pedra[]> {
 
   return pedraSchema.array().parse(await response.json())
 }
+
+export async function buscarImagemPedra(opts: { id: string; apiKey: string }): Promise<Blob> {
+  const response = await fetch(`${import.meta.env.VITE_API_URL ?? ''}/pedras/${opts.id}/imagem`, {
+    headers: { 'X-API-Key': opts.apiKey },
+  })
+
+  if (!response.ok) throw new HttpError(response.status)
+
+  return response.blob()
+}

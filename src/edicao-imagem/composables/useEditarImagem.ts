@@ -5,9 +5,10 @@ import { ElMessage } from 'element-plus'
 // sem o estilo manual, o toast aparece sem formatação.
 import 'element-plus/es/components/message/style/css'
 import { useAuthStore } from '../../auth/authStore'
+import { buscarPedras } from '../api/buscarPedras'
 import { editarImagem, type ResultadoEdicao } from '../api/editarImagem'
 import { EdicaoFalhouError, HttpError } from '../domain/errors'
-import type { EdicaoFase } from '../domain/types'
+import type { EdicaoFase, Pedra } from '../domain/types'
 import { validarFoto } from '../domain/validarFoto'
 
 export function useEditarImagem() {
@@ -18,6 +19,22 @@ export function useEditarImagem() {
   const resultado = ref<ResultadoEdicao | null>(null)
   const erro = ref<string | null>(null)
   const processando = ref(false)
+  const pedras = ref<Pedra[]>([])
+  const pedraSelecionada = ref('')
+
+  async function carregarPedras(): Promise<void> {
+    try {
+      pedras.value = await buscarPedras({ apiKey: auth.apiKey })
+    } catch (e) {
+      if (e instanceof HttpError && e.status === 401) {
+        auth.sair()
+        ElMessage.error('API key inválida. Entre novamente.')
+        router.push('/token')
+        return
+      }
+      erro.value = 'Não foi possível carregar o catálogo de pedras.'
+    }
+  }
 
   async function submeter(file: File, pedraId?: string): Promise<void> {
     const mensagem = validarFoto({ tipo: file.type, tamanho: file.size })
@@ -69,5 +86,15 @@ export function useEditarImagem() {
     erro.value = null
   }
 
-  return { fase, resultado, erro, processando, submeter, reiniciar }
+  return {
+    fase,
+    resultado,
+    erro,
+    processando,
+    pedras,
+    pedraSelecionada,
+    carregarPedras,
+    submeter,
+    reiniciar,
+  }
 }
