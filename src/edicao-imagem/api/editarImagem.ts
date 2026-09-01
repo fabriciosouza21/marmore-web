@@ -73,7 +73,9 @@ export function editarImagem(opts: { apiKey: string; image: Blob }): ConstrutorE
     const body = new FormData()
     body.append('image', opts.image)
 
-    const response = await fetch('/images/edit', {
+    // Em producao VITE_API_URL aponta para a API (build com .env.production);
+    // em dev fica vazia e o proxy do vite encaminha /images para localhost:8080.
+    const response = await fetch(`${import.meta.env.VITE_API_URL ?? ''}/images/edit`, {
       method: 'POST',
       headers: {
         'X-API-Key': opts.apiKey,
