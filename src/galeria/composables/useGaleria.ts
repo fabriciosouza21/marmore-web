@@ -23,6 +23,7 @@ export function useGaleria() {
 
   async function carregar(): Promise<void> {
     carregando.value = true
+    erro.value = null
     try {
       const lista = await listarImagens({ apiKey: auth.apiKey })
       const blobs = await Promise.all(

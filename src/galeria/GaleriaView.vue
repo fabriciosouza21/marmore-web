@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useGaleria } from './composables/useGaleria'
 import type { ImagemGerada } from './domain/types'
 
-const { imagens, carregar } = useGaleria()
+const { imagens, carregando, erro, carregar } = useGaleria()
+const router = useRouter()
 
 onMounted(carregar)
+
+function gerarNovaBancada(): void {
+  router.push('/captura')
+}
 
 function formatarData(criadoEm: string): string {
   return new Date(criadoEm).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
@@ -21,23 +27,38 @@ function metaDoCartao(item: { imagem: ImagemGerada }): string {
 <template>
   <section>
     <h2 class="titulo-tela">Imagens geradas</h2>
-    <p>Toque em uma imagem para ampliar.</p>
-    <div class="galeria">
-      <article v-for="item in imagens" :key="item.imagem.id" class="cartao-imagem">
-        <el-image
-          :src="item.url"
-          fit="cover"
-          :preview-src-list="[item.url]"
-          preview-teleported
-          :hide-on-click-modal="true"
-          alt="Imagem gerada"
-        />
-        <p class="legenda">
-          <span v-if="item.imagem.nome_pedra" class="pedra">{{ item.imagem.nome_pedra }}</span>
-          <span class="meta">{{ metaDoCartao(item) }}</span>
-        </p>
-      </article>
+    <p v-if="carregando">Carregando imagens...</p>
+    <el-alert v-else-if="erro" :title="erro" type="error" show-icon>
+      <el-button @click="carregar">Tentar novamente</el-button>
+    </el-alert>
+    <div v-else-if="!imagens.length" class="vazio">
+      <p>Nenhuma imagem gerada ainda.</p>
+      <el-button class="botao-cheio" type="primary" @click="gerarNovaBancada">
+        Gerar primeira bancada
+      </el-button>
     </div>
+    <template v-else>
+      <p>Toque em uma imagem para ampliar.</p>
+      <div class="galeria">
+        <article v-for="item in imagens" :key="item.imagem.id" class="cartao-imagem">
+          <el-image
+            :src="item.url"
+            fit="cover"
+            :preview-src-list="[item.url]"
+            preview-teleported
+            :hide-on-click-modal="true"
+            alt="Imagem gerada"
+          />
+          <p class="legenda">
+            <span v-if="item.imagem.nome_pedra" class="pedra">{{ item.imagem.nome_pedra }}</span>
+            <span class="meta">{{ metaDoCartao(item) }}</span>
+          </p>
+        </article>
+      </div>
+      <el-button class="botao-cheio" type="primary" @click="gerarNovaBancada">
+        Gerar nova bancada
+      </el-button>
+    </template>
   </section>
 </template>
 
@@ -50,6 +71,10 @@ section {
 
 h2 {
   margin: 0 0 1rem;
+}
+
+.vazio p {
+  margin: 0 0 0.75rem;
 }
 
 .galeria {
@@ -75,5 +100,10 @@ h2 {
   display: block;
   color: var(--el-text-color-primary);
   font-weight: 600;
+}
+
+.botao-cheio {
+  width: 100%;
+  margin-top: 0.75rem;
 }
 </style>
