@@ -6,8 +6,10 @@ import App from '@/App.vue'
 
 // RouterView e RouterLink precisam de stub: App.vue renderiza <RouterView/> e
 // o guard; sem um router real, o componente queima ao tentar injetar o contexto.
+const pushMock = vi.hoisted(() => vi.fn())
 vi.mock('vue-router', () => ({
   RouterView: { name: 'RouterView', template: '<div />' },
+  useRouter: () => ({ push: pushMock }),
 }))
 
 describe('App', () => {
@@ -41,5 +43,15 @@ describe('App', () => {
     await botaoSair!.trigger('click')
 
     expect(store.autenticado).toBe(false)
+  })
+
+  it('ao clicar Sair volta para /token', async () => {
+    useAuthStore().entrar('chave-valida')
+
+    const wrapper = mount(App)
+    const botaoSair = wrapper.findAll('button').filter((b) => b.text().includes('Sair'))[0]
+    await botaoSair!.trigger('click')
+
+    expect(pushMock).toHaveBeenCalledWith('/token')
   })
 })
