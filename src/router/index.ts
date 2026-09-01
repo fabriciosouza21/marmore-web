@@ -6,6 +6,7 @@ import { redirecionarAuth } from '@/auth/redirecionarAuth'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    { path: '/', redirect: '/token' },
     { path: '/token', component: () => import('@/auth/TokenView.vue') },
     { path: '/captura', component: () => import('@/edicao-imagem/CapturaView.vue') },
   ],
