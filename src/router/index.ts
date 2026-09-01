@@ -9,6 +9,7 @@ const router = createRouter({
     { path: '/', redirect: '/token' },
     { path: '/token', component: () => import('@/auth/TokenView.vue') },
     { path: '/captura', component: () => import('@/edicao-imagem/CapturaView.vue') },
+    { path: '/galeria', component: () => import('@/galeria/GaleriaView.vue') },
   ],
 })
 

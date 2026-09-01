@@ -530,5 +530,17 @@ describe('CapturaView', () => {
 
       expect(wrapper.find('h2').text()).toBe('Editar foto do ambiente')
     })
+
+    it('oferece ver imagens geradas e navega para a galeria', async () => {
+      mockarFetchRotas()
+      const wrapper = mount(CapturaView)
+      await flushPromises()
+
+      const botao = acharBotao(wrapper, 'Ver imagens geradas')
+      expect(botao, 'botao "Ver imagens geradas" deveria existir').toBeDefined()
+      await botao!.trigger('click')
+
+      expect(pushMock).toHaveBeenCalledWith('/galeria')
+    })
   })
 })

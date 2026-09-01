@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { buscarImagemPedra } from './api/buscarPedras'
 import { useEditarImagem } from './composables/useEditarImagem'
 import type { Pedra } from './domain/types'
@@ -16,6 +17,7 @@ const {
   reiniciar,
   carregarPedras,
 } = useEditarImagem()
+const router = useRouter()
 const auth = useAuthStore()
 
 const indicePorFase = { recebido: 0, redimensionando: 1, gerando: 2 }
@@ -106,6 +108,10 @@ function gerar(): void {
 function reiniciarFluxo(): void {
   arquivo.value = null
   reiniciar()
+}
+
+function verImagensGeradas(): void {
+  router.push('/galeria')
 }
 </script>
 
@@ -208,6 +214,8 @@ function reiniciarFluxo(): void {
         <el-button @click="reiniciarFluxo">Tentar novamente</el-button>
       </el-alert>
     </div>
+
+    <el-button class="botao-secundario" @click="verImagensGeradas">Ver imagens geradas</el-button>
   </section>
 </template>
 
@@ -320,5 +328,11 @@ h2 {
 .botao-cheio {
   width: 100%;
   margin-top: 0.75rem;
+}
+
+.botao-secundario {
+  width: 100%;
+  margin-top: 0.75rem;
+  margin-left: 0;
 }
 </style>
