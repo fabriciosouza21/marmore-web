@@ -218,7 +218,7 @@ describe('GaleriaView', () => {
     useAuthStore().entrar('key-valida')
     mockarFetchRotas({ listagem: () => new Response('{"error":"key invalida"}', { status: 401 }) })
 
-    const wrapper = mount(GaleriaView)
+    mount(GaleriaView)
     await flushPromises()
 
     expect(useAuthStore().autenticado).toBe(false)

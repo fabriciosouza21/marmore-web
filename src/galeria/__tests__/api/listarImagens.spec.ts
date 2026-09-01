@@ -56,25 +56,23 @@ describe('listarImagens', () => {
   it('rejeita com erro de validação quando o payload não corresponde a ImagemGerada', async () => {
     vi.stubGlobal(
       'fetch',
-      vi
-        .fn()
-        .mockResolvedValue(
-          new Response(
-            JSON.stringify([
-              {
-                criado_em: '2026-09-01T12:00:00.000Z',
-                modelo: 'gpt-image-1',
-                custo_brl: null,
-                latencia_ms: 100,
-                pedra: null,
-                nome_pedra: null,
-                produto: null,
-                nome_produto: null,
-              },
-            ]),
-            { status: 200 },
-          ),
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify([
+            {
+              criado_em: '2026-09-01T12:00:00.000Z',
+              modelo: 'gpt-image-1',
+              custo_brl: null,
+              latencia_ms: 100,
+              pedra: null,
+              nome_pedra: null,
+              produto: null,
+              nome_produto: null,
+            },
+          ]),
+          { status: 200 },
         ),
+      ),
     )
 
     // Sem padrão anterior no projeto para falha de validação de JSON:
