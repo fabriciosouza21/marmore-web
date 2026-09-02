@@ -30,7 +30,8 @@ export function useGaleria() {
         lista.map((im) => buscarArquivoImagem({ id: im.id, apiKey: auth.apiKey })),
       )
       revogarUrls()
-      imagens.value = lista.map((im, i) => ({ imagem: im, url: URL.createObjectURL(blobs[i]) }))
+      // Promise.all preserva ordem e tamanho: blobs[i] sempre existe para lista[i].
+      imagens.value = lista.map((im, i) => ({ imagem: im, url: URL.createObjectURL(blobs[i]!) }))
     } catch (e) {
       if (e instanceof HttpError && e.status === 401) {
         auth.sair()
