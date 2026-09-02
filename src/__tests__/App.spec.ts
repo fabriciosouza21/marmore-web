@@ -54,4 +54,12 @@ describe('App', () => {
 
     expect(pushMock).toHaveBeenCalledWith('/token')
   })
+
+  it('mostra a versao no rodape', () => {
+    const wrapper = mount(App)
+
+    const rodape = wrapper.find('footer.rodape-versao')
+    expect(rodape.exists(), 'rodape de versao deveria existir').toBe(true)
+    expect(rodape.text()).toMatch(/^v\d+\.\d+\.\d+/)
+  })
 })

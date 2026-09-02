@@ -8,6 +8,8 @@ import { useToken } from './auth/useToken'
 
 const { autenticado } = storeToRefs(useAuthStore())
 const { sair } = useToken()
+
+const versao = __APP_VERSION__
 </script>
 
 <template>
@@ -16,6 +18,8 @@ const { sair } = useToken()
 
     <ThemeToggle class="theme-toggle" />
     <el-button v-if="autenticado" class="botao-sair" text @click="sair">Sair</el-button>
+
+    <footer class="rodape-versao">v{{ versao }}</footer>
   </el-config-provider>
 </template>
 
@@ -30,5 +34,12 @@ const { sair } = useToken()
   position: absolute;
   top: 1rem;
   right: 3.5rem;
+}
+
+.rodape-versao {
+  margin: 1.5rem 0 0.75rem;
+  font-size: var(--text-label);
+  color: var(--el-text-color-secondary);
+  text-align: center;
 }
 </style>
