@@ -490,6 +490,52 @@ describe('CapturaView', () => {
       expect(gerar!.attributes('disabled')).toBeUndefined()
     })
 
+    it('regera a partir do resultado com custo e duracao proprios', async () => {
+      const img1 = 'aW1hZ2VtLXByaW1laXJh'
+      const img2 = 'aW1hZ2VtLXNlZ3VuZGE'
+      let chamadas = 0
+      const fetchMock = mockarFetchRotas({
+        edicao: () => {
+          chamadas++
+          const [latency, custo, imagem] =
+            chamadas === 1 ? [1000, 0.1, img1] : [2500, 0.3, img2]
+          return respostaSse([
+            `data:{"latency_ms":${latency},"custo_brl":${custo}}\n\ndata:${imagem}\n\n`,
+          ])
+        },
+      })
+      const wrapper = mount(CapturaView)
+      await flushPromises()
+
+      await iniciarFluxo(wrapper, new File(['conteudo'], 'foto.png', { type: 'image/png' }))
+      await flushPromises()
+
+      const url1 = `data:image/png;base64,${img1}`
+      expect(wrapper.find(`img[src="${url1}"]`).exists()).toBe(true)
+      const textoPrimeira = wrapper.text().replace(/\u00A0/g, ' ')
+      expect(textoPrimeira).toContain('R$ 0,10')
+      expect(textoPrimeira).toContain('1,0 s')
+
+      const acao = acharAcao(wrapper, 'Ajustar e gerar outra versão')
+      expect(acao).toBeDefined()
+      await acao!.trigger('click')
+
+      await clicarGerarBancada(wrapper)
+      await flushPromises()
+
+      const chamadasEdicao = fetchMock.mock.calls.filter(([recurso]) =>
+        String(recurso).endsWith('/images/edit'),
+      )
+      expect(chamadasEdicao).toHaveLength(2)
+
+      const url2 = `data:image/png;base64,${img2}`
+      expect(wrapper.find(`img[src="${url1}"]`).exists()).toBe(false)
+      expect(wrapper.find(`img[src="${url2}"]`).exists()).toBe(true)
+      const textoSegunda = wrapper.text().replace(/\u00A0/g, ' ')
+      expect(textoSegunda).toContain('R$ 0,30')
+      expect(textoSegunda).toContain('2,5 s')
+    })
+
     it('permite tentar novamente apos erro retomando o fluxo', async () => {
       mockarFetchRotas({
         edicao: () => respostaSse(['data:{"error":"falhou","latency_ms":10}\n\n']),
