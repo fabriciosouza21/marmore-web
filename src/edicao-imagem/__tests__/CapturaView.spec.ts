@@ -298,6 +298,27 @@ describe('CapturaView', () => {
       ).toBe(false)
     })
 
+    it('leva a descricao preenchida ate o corpo do envio', async () => {
+      const fetchMock = mockarFetchRotas({
+        edicao: () => respostaSse(['data:{"latency_ms":1}\n\ndata:img\n\n']),
+      })
+      const wrapper = mount(CapturaView)
+      await flushPromises()
+
+      await selecionarPedra(wrapper, 'verde_ubatuba')
+      await selecionarArquivo(wrapper, new File(['conteudo'], 'foto.png', { type: 'image/png' }))
+      await wrapper.find('textarea').setValue('Na mureta, a bancada da pia.')
+      await clicarGerarBancada(wrapper)
+      await flushPromises()
+
+      const chamadaEdicao = fetchMock.mock.calls.find(([recurso]) =>
+        String(recurso).endsWith('/images/edit'),
+      )
+      expect(chamadaEdicao).toBeDefined()
+      const body = chamadaEdicao![1]!.body as FormData
+      expect(body.get('descricao')).toBe('Na mureta, a bancada da pia.')
+    })
+
     it('avanca o progresso conforme as fases chegam', async () => {
       mockarFetchRotas({
         edicao: () =>

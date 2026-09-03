@@ -62,6 +62,7 @@ export function useEditarImagem() {
         apiKey: auth.apiKey,
         image: file,
         pedra: pedraId ?? '',
+        descricao: descricao ?? '',
       })
         .onFase((f) => {
           fase.value = f
