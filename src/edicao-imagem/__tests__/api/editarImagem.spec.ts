@@ -53,6 +53,27 @@ describe('editarImagem', () => {
     })
   })
 
+  it('envia a parte descricao no FormData quando preenchida', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(
+        new Response(criarStreamSse(['data:{"latency_ms":1}\n\ndata:img\n\n']), { status: 200 }),
+      )
+    vi.stubGlobal('fetch', fetchMock)
+
+    const imagem = new Blob(['conteudo'], { type: 'image/png' })
+    await editarImagem({
+      apiKey: 'minha-key',
+      image: imagem,
+      pedra: 'verde_ubatuba',
+      descricao: 'Do lado da janela havera um balcao.',
+    }).run()
+
+    const [url, init] = fetchMock.mock.calls[0]
+    expect(init.body).toBeInstanceOf(FormData)
+    expect(init.body.get('descricao')).toBe('Do lado da janela havera um balcao.')
+  })
+
   it('resolve com imagemBase64 quando o stream envia conclusão seguida de imagem', async () => {
     mockarFetchSse(['data:{"latency_ms":12345}\n\ndata:ZmFrZS1pbWFnZW0x\n\n'])
 

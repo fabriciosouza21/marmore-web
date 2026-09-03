@@ -70,6 +70,7 @@ export function editarImagem(opts: {
   apiKey: string
   image: Blob
   pedra: string
+  descricao?: string
 }): ConstrutorEdicao {
   let onFaseFn: ((fase: EdicaoFase) => void) | null = null
 
@@ -77,6 +78,7 @@ export function editarImagem(opts: {
     const body = new FormData()
     body.append('image', opts.image)
     body.append('pedra', opts.pedra)
+    if (opts.descricao?.trim()) body.append('descricao', opts.descricao)
 
     // Em producao VITE_API_URL aponta para a API (build com .env.production);
     // em dev fica vazia e o proxy do vite encaminha /images para localhost:8080.
