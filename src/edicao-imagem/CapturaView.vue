@@ -108,6 +108,7 @@ function gerar(): void {
 
 function reiniciarFluxo(): void {
   arquivo.value = null
+  descricao.value = ''
   reiniciar()
 }
 
@@ -148,7 +149,9 @@ function verImagensGeradas(): void {
             s
           </span>
         </p>
-        <el-button class="botao-cheio" @click="retomarEdicao">Ajustar e gerar outra versão</el-button>
+        <el-button class="botao-cheio" @click="retomarEdicao"
+          >Ajustar e gerar outra versão</el-button
+        >
         <el-button class="botao-cheio" @click="reiniciarFluxo">Editar outra foto</el-button>
       </div>
     </Transition>
