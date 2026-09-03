@@ -140,3 +140,42 @@ test('fluxo com descricao preenchida envia a parte descricao', async ({ page }) 
   expect(await parteTextoMultipart(pedidosEdicao[0], 'pedra')).toBe('verde_ubatuba')
   expect(await parteTextoMultipart(pedidosEdicao[0], 'descricao')).toBe(descricao)
 })
+
+// contrato ponta-a-ponta da regeneracao: partindo de um resultado, o vendedor
+// clica "Ajustar e gerar outra versao", muda SOMENTE a pedra e gera de novo
+// sem reenviar o arquivo. O segundo POST /images/edit precisa carregar a
+// nova pedra; a foto original (ja em memoria) e reenviada pelo proprio app.
+test('fluxo de regeneracao troca a pedra sem reenviar a foto', async ({ page }) => {
+  await page.goto('/')
+  await expect(page).toHaveURL(/\/token$/)
+
+  await page.getByRole('textbox').fill('e2e-key')
+  await page.getByRole('button', { name: 'Entrar' }).click()
+  await expect(page).toHaveURL(/\/captura$/)
+
+  await page.locator('.seletor-pedra').click()
+  await page.getByRole('option', { name: 'Verde Ubatuba' }).click()
+  await expect(page.getByAltText('Amostra da pedra')).toBeVisible()
+
+  await page.setInputFiles('input[type="file"]:not([capture])', {
+    name: 'foto.png',
+    mimeType: 'image/png',
+    buffer: PNG_1PX,
+  })
+
+  await page.getByRole('button', { name: 'Gerar bancada' }).click()
+  await expect(page.getByAltText('Ambiente editado')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Ajustar e gerar outra versão' }).click()
+
+  await page.locator('.seletor-pedra').click()
+  await page.getByRole('option', { name: 'Preto São Gabriel' }).click()
+  await expect(page.getByAltText('Amostra da pedra')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Gerar bancada' }).click()
+  await expect(page.getByAltText('Ambiente editado')).toBeVisible()
+
+  expect(pedidosEdicao).toHaveLength(2)
+  expect(await parteTextoMultipart(pedidosEdicao[0], 'pedra')).toBe('verde_ubatuba')
+  expect(await parteTextoMultipart(pedidosEdicao[1], 'pedra')).toBe('preto_sao_gabriel')
+})
