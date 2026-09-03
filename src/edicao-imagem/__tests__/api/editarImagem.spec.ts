@@ -74,6 +74,44 @@ describe('editarImagem', () => {
     expect(init.body.get('descricao')).toBe('Do lado da janela havera um balcao.')
   })
 
+  it('nao envia a parte descricao quando ausente nas opcoes', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(
+        new Response(criarStreamSse(['data:{"latency_ms":1}\n\ndata:img\n\n']), { status: 200 }),
+      )
+    vi.stubGlobal('fetch', fetchMock)
+
+    const imagem = new Blob(['conteudo'], { type: 'image/png' })
+    await editarImagem({ apiKey: 'minha-key', image: imagem, pedra: 'verde_ubatuba' }).run()
+
+    const [url, init] = fetchMock.mock.calls[0]
+    expect(init.body).toBeInstanceOf(FormData)
+    expect(init.body.get('descricao')).toBeNull()
+    expect(init.body.get('pedra')).toBe('verde_ubatuba')
+  })
+
+  it('nao envia a parte descricao quando possui apenas espacos', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(
+        new Response(criarStreamSse(['data:{"latency_ms":1}\n\ndata:img\n\n']), { status: 200 }),
+      )
+    vi.stubGlobal('fetch', fetchMock)
+
+    const imagem = new Blob(['conteudo'], { type: 'image/png' })
+    await editarImagem({
+      apiKey: 'minha-key',
+      image: imagem,
+      pedra: 'verde_ubatuba',
+      descricao: '   ',
+    }).run()
+
+    const [url, init] = fetchMock.mock.calls[0]
+    expect(init.body).toBeInstanceOf(FormData)
+    expect(init.body.get('descricao')).toBeNull()
+  })
+
   it('resolve com imagemBase64 quando o stream envia conclusão seguida de imagem', async () => {
     mockarFetchSse(['data:{"latency_ms":12345}\n\ndata:ZmFrZS1pbWFnZW0x\n\n'])
 
