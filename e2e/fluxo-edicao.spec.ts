@@ -107,3 +107,36 @@ test('fluxo token -> pedra + foto -> resultado', async ({ page }) => {
   expect(pedidosEdicao).toHaveLength(1)
   expect(await parteTextoMultipart(pedidosEdicao[0], 'pedra')).toBe('verde_ubatuba')
 })
+
+// contrato ponta-a-ponta da descricao: o texto digitado na textarea precisa
+// atravessar o browser real e chegar como parte "descricao" no multipart do
+// POST /images/edit (a view unitaria cobre o nivel de componente, este cobre
+// a UI inteira).
+test('fluxo com descricao preenchida envia a parte descricao', async ({ page }) => {
+  await page.goto('/')
+  await expect(page).toHaveURL(/\/token$/)
+
+  await page.getByRole('textbox').fill('e2e-key')
+  await page.getByRole('button', { name: 'Entrar' }).click()
+  await expect(page).toHaveURL(/\/captura$/)
+
+  await page.locator('.seletor-pedra').click()
+  await page.getByRole('option', { name: 'Verde Ubatuba' }).click()
+  await expect(page.getByAltText('Amostra da pedra')).toBeVisible()
+
+  await page.setInputFiles('input[type="file"]:not([capture])', {
+    name: 'foto.png',
+    mimeType: 'image/png',
+    buffer: PNG_1PX,
+  })
+
+  const descricao = 'Na mureta, a bancada da pia; acima, um espelho.'
+  await page.locator('textarea').fill(descricao)
+
+  await page.getByRole('button', { name: 'Gerar bancada' }).click()
+  await expect(page.getByAltText('Ambiente editado')).toBeVisible()
+
+  expect(pedidosEdicao).toHaveLength(1)
+  expect(await parteTextoMultipart(pedidosEdicao[0], 'pedra')).toBe('verde_ubatuba')
+  expect(await parteTextoMultipart(pedidosEdicao[0], 'descricao')).toBe(descricao)
+})
