@@ -281,6 +281,23 @@ describe('CapturaView', () => {
       ).toBe(false)
     })
 
+    it('bloqueia o envio com descricao acima de 1000 caracteres', async () => {
+      const fetchMock = mockarFetchRotas()
+      const wrapper = mount(CapturaView)
+      await flushPromises()
+
+      await selecionarPedra(wrapper, 'verde_ubatuba')
+      await selecionarArquivo(wrapper, new File(['conteudo'], 'foto.png', { type: 'image/png' }))
+      await wrapper.find('textarea').setValue('a'.repeat(1001))
+      await clicarGerarBancada(wrapper)
+      await flushPromises()
+
+      expect(wrapper.text()).toContain('A descrição deve ter no máximo 1000 caracteres.')
+      expect(
+        fetchMock.mock.calls.some(([recurso]) => String(recurso).endsWith('/images/edit')),
+      ).toBe(false)
+    })
+
     it('avanca o progresso conforme as fases chegam', async () => {
       mockarFetchRotas({
         edicao: () =>

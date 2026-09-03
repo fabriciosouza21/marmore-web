@@ -103,7 +103,7 @@ function aoEscolherArquivo(event: Event): void {
 
 function gerar(): void {
   if (!arquivo.value) return
-  submeter(arquivo.value, pedraSelecionada.value)
+  submeter(arquivo.value, pedraSelecionada.value, descricao.value)
 }
 
 function reiniciarFluxo(): void {

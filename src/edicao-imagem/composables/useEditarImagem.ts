@@ -10,6 +10,7 @@ import { editarImagem, type ResultadoEdicao } from '../api/editarImagem'
 import { EdicaoFalhouError, HttpError } from '../domain/errors'
 import type { EdicaoFase, Pedra } from '../domain/types'
 import { validarFoto } from '../domain/validarFoto'
+import { validarDescricao } from '../domain/validarDescricao'
 
 export function useEditarImagem() {
   const auth = useAuthStore()
@@ -37,7 +38,7 @@ export function useEditarImagem() {
     }
   }
 
-  async function submeter(file: File, pedraId?: string): Promise<void> {
+  async function submeter(file: File, pedraId?: string, descricao?: string): Promise<void> {
     const mensagem = validarFoto({ tipo: file.type, tamanho: file.size })
     if (mensagem) {
       erro.value = mensagem
@@ -46,6 +47,12 @@ export function useEditarImagem() {
 
     if (pedraId === '') {
       erro.value = 'Escolha a pedra da bancada antes de enviar.'
+      return
+    }
+
+    const mensagemDescricao = validarDescricao(descricao ?? '')
+    if (mensagemDescricao) {
+      erro.value = mensagemDescricao
       return
     }
 
