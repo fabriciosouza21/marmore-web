@@ -30,6 +30,7 @@ vi.mock('../composables/useEditarImagem', async (importOriginal) => {
             processando: ref(false),
             pedras: ref([]),
             pedraSelecionada: ref(''),
+            descricao: ref(''),
             submeter: composableMock.submeter,
             reiniciar: vi.fn(),
             carregarPedras: composableMock.carregarPedras,
@@ -529,6 +530,22 @@ describe('CapturaView', () => {
       const wrapper = mount(CapturaView)
 
       expect(wrapper.find('h2').text()).toBe('Editar foto do ambiente')
+    })
+
+    it('renderiza campo de descricao com instrucao, placeholder e contador', async () => {
+      mockarFetchRotas()
+      const wrapper = mount(CapturaView)
+      await flushPromises()
+
+      expect(wrapper.text()).toContain('Descreva como o ambiente vai ficar depois da obra')
+
+      const textarea = wrapper.find('textarea')
+      expect(textarea.exists(), 'textarea de descricao deveria existir').toBe(true)
+      expect(textarea.attributes('placeholder')).toBe(
+        'Ex.: do lado da janela haverá um balcão; na mureta, a bancada da pia; acima, um espelho e um balcão.',
+      )
+
+      expect(wrapper.text()).toContain('0 / 1000')
     })
 
     it('oferece ver imagens geradas e navega para a galeria', async () => {

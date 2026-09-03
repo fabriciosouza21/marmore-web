@@ -13,6 +13,7 @@ const {
   processando,
   pedras,
   pedraSelecionada,
+  descricao,
   submeter,
   reiniciar,
   carregarPedras,
@@ -188,6 +189,15 @@ function verImagensGeradas(): void {
         <el-button class="botao-envio" @click="abrirArquivo">Enviar arquivo</el-button>
       </template>
 
+      <p>Descreva como o ambiente vai ficar depois da obra</p>
+      <el-input
+        v-model="descricao"
+        type="textarea"
+        :rows="3"
+        placeholder="Ex.: do lado da janela haverá um balcão; na mureta, a bancada da pia; acima, um espelho e um balcão."
+      />
+      <p class="contador-descricao">{{ descricao.length }} / 1000</p>
+
       <el-button
         class="botao-cheio"
         type="primary"
@@ -253,6 +263,12 @@ h2 {
   color: var(--el-text-color-primary);
   font-weight: 600;
   margin-left: 0.25rem;
+}
+
+.contador-descricao {
+  margin: 0.25rem 0 0;
+  font-size: var(--text-label);
+  color: var(--el-text-color-secondary);
 }
 
 .botao-envio {

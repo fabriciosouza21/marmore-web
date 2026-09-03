@@ -21,6 +21,7 @@ export function useEditarImagem() {
   const processando = ref(false)
   const pedras = ref<Pedra[]>([])
   const pedraSelecionada = ref('')
+  const descricao = ref('')
 
   async function carregarPedras(): Promise<void> {
     try {
@@ -93,6 +94,7 @@ export function useEditarImagem() {
     processando,
     pedras,
     pedraSelecionada,
+    descricao,
     carregarPedras,
     submeter,
     reiniciar,
