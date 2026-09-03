@@ -443,6 +443,29 @@ describe('CapturaView', () => {
       ).toBe(false)
     })
 
+    it('oferece ajustar e gerar outra versao voltando ao formulario', async () => {
+      mockarFetchRotas({
+        edicao: () => respostaSse(['data:{"latency_ms":500}\n\ndata:aW1hZ2VtLXJlaW5pY2lhcg==\n\n']),
+      })
+      const wrapper = mount(CapturaView)
+      await flushPromises()
+
+      await iniciarFluxo(wrapper, new File(['conteudo'], 'foto.png', { type: 'image/png' }))
+      await flushPromises()
+      expect(
+        wrapper.find('img[src="data:image/png;base64,aW1hZ2VtLXJlaW5pY2lhcg=="]').exists(),
+      ).toBe(true)
+
+      const acao = acharAcao(wrapper, 'Ajustar e gerar outra versão')
+      expect(acao).toBeDefined()
+      await acao!.trigger('click')
+
+      expect(
+        wrapper.find('img[src="data:image/png;base64,aW1hZ2VtLXJlaW5pY2lhcg=="]').exists(),
+      ).toBe(false)
+      expect(wrapper.find('textarea').isVisible()).toBe(true)
+    })
+
     it('permite tentar novamente apos erro retomando o fluxo', async () => {
       mockarFetchRotas({
         edicao: () => respostaSse(['data:{"error":"falhou","latency_ms":10}\n\n']),

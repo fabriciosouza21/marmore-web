@@ -111,6 +111,10 @@ function reiniciarFluxo(): void {
   reiniciar()
 }
 
+function retomarEdicao(): void {
+  reiniciar()
+}
+
 function verImagensGeradas(): void {
   router.push('/galeria')
 }
@@ -144,6 +148,7 @@ function verImagensGeradas(): void {
             s
           </span>
         </p>
+        <el-button class="botao-cheio" @click="retomarEdicao">Ajustar e gerar outra versão</el-button>
         <el-button class="botao-cheio" @click="reiniciarFluxo">Editar outra foto</el-button>
       </div>
     </Transition>
@@ -344,6 +349,11 @@ h2 {
 .botao-cheio {
   width: 100%;
   margin-top: 0.75rem;
+}
+
+.cartao-resultado .botao-cheio + .botao-cheio {
+  /* zera o margin-left de 12px que o element-plus aplica entre el-buttons */
+  margin-left: 0;
 }
 
 .botao-secundario {
