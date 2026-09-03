@@ -466,6 +466,30 @@ describe('CapturaView', () => {
       expect(wrapper.find('textarea').isVisible()).toBe(true)
     })
 
+    it('retoma formulario com pedra e descricao preservadas e Gerar habilitado', async () => {
+      mockarFetchRotas({
+        edicao: () => respostaSse(['data:{"latency_ms":500}\n\ndata:aW1hZ2VtLXJldG9tbmFkYQ==\n\n']),
+      })
+      const wrapper = mount(CapturaView)
+      await flushPromises()
+
+      await selecionarPedra(wrapper, 'verde_ubatuba')
+      await selecionarArquivo(wrapper, new File(['conteudo'], 'foto.png', { type: 'image/png' }))
+      await wrapper.find('textarea').setValue('Na mureta, a bancada da pia.')
+      await clicarGerarBancada(wrapper)
+      await flushPromises()
+
+      const acao = acharAcao(wrapper, 'Ajustar e gerar outra versão')
+      expect(acao).toBeDefined()
+      await acao!.trigger('click')
+
+      const textarea = wrapper.find('textarea')
+      expect(textarea.isVisible()).toBe(true)
+      expect((textarea.element as HTMLTextAreaElement).value).toBe('Na mureta, a bancada da pia.')
+      const gerar = acharBotao(wrapper, 'Gerar bancada')
+      expect(gerar!.attributes('disabled')).toBeUndefined()
+    })
+
     it('permite tentar novamente apos erro retomando o fluxo', async () => {
       mockarFetchRotas({
         edicao: () => respostaSse(['data:{"error":"falhou","latency_ms":10}\n\n']),
