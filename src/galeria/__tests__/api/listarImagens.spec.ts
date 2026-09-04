@@ -17,6 +17,7 @@ describe('listarImagens', () => {
         nome_pedra: 'Verde Ubatuba',
         produto: 'pia-americana',
         nome_produto: 'Pia americana',
+        descricao: 'balcao do lado da janela e bancada na mureta',
       },
       {
         id: '0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d',
@@ -28,6 +29,7 @@ describe('listarImagens', () => {
         nome_pedra: null,
         produto: null,
         nome_produto: null,
+        descricao: null,
       },
     ]
     const fetchMock = vi
@@ -78,5 +80,43 @@ describe('listarImagens', () => {
     // Sem padrão anterior no projeto para falha de validação de JSON:
     // o contrato fixado é rejeitar com Error (ZodError satisfaz).
     await expect(listarImagens({ apiKey: 'k' })).rejects.toThrow()
+  })
+
+  it('preserva descricao do summary como string ou null', async () => {
+    const imagensEsperadas = [
+      {
+        id: '9f1c3e2a-1b2c-4d3e-8f4a-5b6c7d8e9f0a',
+        criado_em: '2026-09-01T12:00:00.000Z',
+        modelo: 'gpt-image-1',
+        custo_brl: 0.03,
+        latencia_ms: 8214,
+        pedra: 'verde_ubatuba',
+        nome_pedra: 'Verde Ubatuba',
+        produto: 'pia-americana',
+        nome_produto: 'Pia americana',
+        descricao: 'do lado da janela havera um balcao',
+      },
+      {
+        id: '0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d',
+        criado_em: '2026-09-01T13:30:00.000Z',
+        modelo: 'gpt-image-1',
+        custo_brl: null,
+        latencia_ms: 7102,
+        pedra: null,
+        nome_pedra: null,
+        produto: null,
+        nome_produto: null,
+        descricao: null,
+      },
+    ]
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(new Response(JSON.stringify(imagensEsperadas), { status: 200 }))
+    vi.stubGlobal('fetch', fetchMock)
+
+    const imagens = await listarImagens({ apiKey: 'minha-key' })
+
+    expect(imagens[0].descricao).toBe('do lado da janela havera um balcao')
+    expect(imagens[1].descricao).toBeNull()
   })
 })

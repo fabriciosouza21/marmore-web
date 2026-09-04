@@ -10,6 +10,7 @@ export const imagemGeradaSchema = z.object({
   nome_pedra: z.string().nullable(),
   produto: z.string().nullable(),
   nome_produto: z.string().nullable(),
+  descricao: z.string().nullable(),
 })
 
 export type ImagemGerada = z.infer<typeof imagemGeradaSchema>

@@ -20,6 +20,7 @@ const IMAGENS = [
     nome_pedra: 'Verde Ubatuba',
     produto: 'pia-americana',
     nome_produto: 'Pia americana',
+    descricao: 'balcao do lado da janela e bancada na mureta',
   },
   {
     id: '22222222-2222-4222-8222-222222222222',
@@ -31,6 +32,7 @@ const IMAGENS = [
     nome_pedra: null,
     produto: 'pia-americana',
     nome_produto: 'Pia americana',
+    descricao: null,
   },
 ]
 
