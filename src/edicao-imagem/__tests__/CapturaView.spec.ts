@@ -478,9 +478,9 @@ describe('CapturaView', () => {
       await wrapper.find('textarea').setValue('Na mureta, a bancada da pia.')
       await clicarGerarBancada(wrapper)
       await flushPromises()
-      expect(
-        wrapper.find('img[src="data:image/png;base64,aW1hZ2VtLWRpc2NhcmRh"]').exists(),
-      ).toBe(true)
+      expect(wrapper.find('img[src="data:image/png;base64,aW1hZ2VtLWRpc2NhcmRh"]').exists()).toBe(
+        true,
+      )
 
       const acao = acharAcao(wrapper, 'Editar outra foto')
       expect(acao).toBeDefined()

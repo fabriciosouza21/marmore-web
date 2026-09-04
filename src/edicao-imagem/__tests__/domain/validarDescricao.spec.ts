@@ -16,7 +16,7 @@ describe('validarDescricao', () => {
 
   it('rejeita descricao com 1001 caracteres', () => {
     expect(validarDescricao('a'.repeat(1001))).toBe(
-      'A descrição deve ter no máximo 1000 caracteres.'
+      'A descrição deve ter no máximo 1000 caracteres.',
     )
   })
 })
