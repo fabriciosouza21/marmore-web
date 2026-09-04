@@ -150,6 +150,24 @@ describe('GaleriaView', () => {
     expect(textoCartao2).toContain('02/09/2026')
   })
 
+  it('exibe a descricao usada na geracao em bloco proprio do cartao', async () => {
+    useAuthStore().entrar('key-valida')
+    mockarFetchRotas()
+
+    const wrapper = mount(GaleriaView)
+    await flushPromises()
+
+    const cartoes = wrapper.findAll('article.cartao-imagem')
+    expect(cartoes).toHaveLength(2)
+
+    const descricaoCartao1 = cartoes[0]!.find('.descricao')
+    expect(descricaoCartao1.exists()).toBe(true)
+    expect(descricaoCartao1.text()).toBe('balcao do lado da janela e bancada na mureta')
+
+    // a descricao do 1o cartao nao vaza para o cartao vizinho (descricao null)
+    expect(cartoes[1]!.text()).not.toContain('balcao do lado da janela e bancada na mureta')
+  })
+
   it('mostra carregando enquanto a listagem nao resolve', async () => {
     useAuthStore().entrar('key-valida')
     let resolver!: (value: Response) => void
