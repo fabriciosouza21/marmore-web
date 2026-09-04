@@ -109,3 +109,27 @@ test('captura leva para a galeria', async ({ page }) => {
   })
   await expect(page.getByText('Nenhuma imagem gerada ainda.')).toBeVisible()
 })
+
+test('galeria exibe a descricao da geracao e o texto padrao para null', async ({ page }) => {
+  await page.route('**/images', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(IMAGENS),
+    }),
+  )
+  await page.route('**/images/*/arquivo', (route) =>
+    route.fulfill({ status: 200, contentType: 'image/png', body: PNG_1PX }),
+  )
+  await autenticar(page)
+
+  await page.goto('/galeria')
+
+  await expect(page).toHaveURL(/\/galeria$/)
+  // Na suíte completa (5 projects em paralelo) o primeiro acesso a rota lazy
+  // disputa o dev server: timeout folgado so no primeiro assert da tela.
+  await expect(page.getByText('balcao do lado da janela e bancada na mureta')).toBeVisible({
+    timeout: 15_000,
+  })
+  await expect(page.getByText('Sem descricao')).toBeVisible()
+})
