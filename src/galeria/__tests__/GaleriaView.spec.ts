@@ -168,6 +168,25 @@ describe('GaleriaView', () => {
     expect(cartoes[1]!.text()).not.toContain('balcao do lado da janela e bancada na mureta')
   })
 
+  it('exibe texto padrao no bloco descricao quando a descricao e nula', async () => {
+    useAuthStore().entrar('key-valida')
+    mockarFetchRotas()
+
+    const wrapper = mount(GaleriaView)
+    await flushPromises()
+
+    const cartoes = wrapper.findAll('article.cartao-imagem')
+    expect(cartoes).toHaveLength(2)
+
+    // descricao null: o bloco mostra o texto padrao em vez de sair vazio
+    const descricaoCartao2 = cartoes[1]!.find('.descricao')
+    expect(descricaoCartao2.exists()).toBe(true)
+    expect(descricaoCartao2.text()).toBe('Sem descricao')
+
+    // guarda: o cartao com descricao preenchida nao recebe o texto padrao
+    expect(cartoes[0]!.find('.descricao').text()).not.toContain('Sem descricao')
+  })
+
   it('mostra carregando enquanto a listagem nao resolve', async () => {
     useAuthStore().entrar('key-valida')
     let resolver!: (value: Response) => void

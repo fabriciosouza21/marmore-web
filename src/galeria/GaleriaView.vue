@@ -53,7 +53,9 @@ function metaDoCartao(item: { imagem: ImagemGerada }): string {
             <span v-if="item.imagem.nome_pedra" class="pedra">{{ item.imagem.nome_pedra }}</span>
             <span class="meta">{{ metaDoCartao(item) }}</span>
           </p>
-          <p class="descricao">{{ item.imagem.descricao }}</p>
+          <p class="descricao" :class="{ 'descricao-vazia': item.imagem.descricao === null }">
+            {{ item.imagem.descricao ?? 'Sem descricao' }}
+          </p>
         </article>
       </div>
       <el-button class="botao-cheio" type="primary" @click="gerarNovaBancada">
@@ -111,6 +113,10 @@ h2 {
   -webkit-line-clamp: 3;
   overflow: hidden;
   overflow-wrap: anywhere;
+}
+
+.descricao-vazia {
+  color: var(--el-text-color-secondary);
 }
 
 .botao-cheio {
